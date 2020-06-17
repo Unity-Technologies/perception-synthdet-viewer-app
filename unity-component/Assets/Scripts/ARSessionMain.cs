@@ -8,7 +8,7 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 #if UNITY_IOS
-public class NativeAPI {
+public static class NativeApi {
     [DllImport("__Internal")]
     public static extern void arFoundationDidReceiveCameraFrame(byte[] bytes, int count);
 }
@@ -16,15 +16,15 @@ public class NativeAPI {
 
 public class ARSessionMain : MonoBehaviour
 {
-    private const int WIDTH = 1280;
-    private const int HEIGHT = 960;
+    private const int Width = 1280;
+    private const int Height = 960;
 
-    private const float FPS = 4;
+    private const float UpdatesPerSecond = 5;
     
     public ARSession arSession;
     public ARCameraManager cameraManager;
 
-    private float lastTime = 0;
+    private float _lastTime = 0;
     
     private IEnumerator Start() {
         if (ARSession.state == ARSessionState.None ||
@@ -39,10 +39,9 @@ public class ARSessionMain : MonoBehaviour
         }
         else
         {
-            // Start the AR session
             arSession.enabled = true;
 
-            Console.WriteLine(cameraManager.enabled);
+            Console.WriteLine("AR Session started");
         }
     }
 
@@ -58,11 +57,11 @@ public class ARSessionMain : MonoBehaviour
 
     private void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs)
     {
-        if (1 / (Time.fixedTime - lastTime) > FPS)
+        if (1 / (Time.fixedTime - _lastTime) > UpdatesPerSecond)
         {
             return;
         }
-        lastTime = Time.fixedTime;
+        _lastTime = Time.fixedTime;
         
         if (!cameraManager.TryGetLatestImage(out var image))
         {
@@ -77,7 +76,7 @@ public class ARSessionMain : MonoBehaviour
         var conversionParams = new XRCameraImageConversionParams
         {
             inputRect = new RectInt(0, 0, image.width, image.height),
-            outputDimensions = new Vector2Int(WIDTH, HEIGHT),
+            outputDimensions = new Vector2Int(Width, Height),
             outputFormat = TextureFormat.RGBA32,
             transformation = CameraImageTransformation.MirrorY
         };
@@ -111,10 +110,9 @@ public class ARSessionMain : MonoBehaviour
         buffer.Dispose();
         
         #if UNITY_IOS
-                Console.WriteLine("Sending image...");
-                NativeAPI.arFoundationDidReceiveCameraFrame(jpgData, jpgData.Length);
+            NativeApi.arFoundationDidReceiveCameraFrame(jpgData, jpgData.Length);
         #else
-                Console.WriteLine("Not using iOS platform - no image data is being sent");
+            Console.WriteLine("Not using iOS platform - no image data is being sent");
         #endif
     }
 }

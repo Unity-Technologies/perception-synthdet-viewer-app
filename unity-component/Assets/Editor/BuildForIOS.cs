@@ -6,6 +6,7 @@ public class BuildForIOS
         "Assets/Scenes/MainScene.unity"
     };
 
+    [MenuItem ("File/Build for iOS")]
     public static void Build()
     {
         string deployPath = "xcode-build";
