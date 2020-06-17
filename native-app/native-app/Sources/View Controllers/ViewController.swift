@@ -10,8 +10,15 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private let IMAGE_SIZE_LANDSCAPE = CGSize(width: 1280, height: 960)
-    private let scaleFactor: CGFloat = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / 1280.0 * UIScreen.main.nativeScale
+    private let imageWidth: CGFloat = 1280
+    
+    private var imageHeight: CGFloat {
+        imageWidth * min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+    }
+    
+    private var scaleFactor: CGFloat {
+        max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / imageWidth * UIScreen.main.nativeScale
+    }
     
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -207,7 +214,7 @@ extension ViewController: URLSessionDataDelegate {
                 let scaledBoxes = classifications.map {
                         ObjectClassification(label: $0.label,
                             box: $0.box
-                               .rotated(by: orientation, in: self.IMAGE_SIZE_LANDSCAPE)
+                                .rotated(by: orientation, in: CGSize(width: self.imageWidth, height: self.imageHeight))
                                .scaled(by: self.scaleFactor),
                             score: $0.score)
                     }

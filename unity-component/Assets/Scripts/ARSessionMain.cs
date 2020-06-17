@@ -17,7 +17,7 @@ public static class NativeApi {
 public class ARSessionMain : MonoBehaviour
 {
     private const int Width = 1280;
-    private const int Height = 960;
+    private static int Height => Width * Math.Min(Screen.width, Screen.height) / Math.Max(Screen.width, Screen.height);
 
     private const float UpdatesPerSecond = 5;
     

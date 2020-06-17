@@ -44,14 +44,49 @@ class ThresholdCell: UITableViewCell {
         return label
     }()
     
+    private let separatorView: UIView = {
+        let view = UIView()
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.clear.cgColor, UIColor.systemGray2.cgColor]
+        view.layer.insertSublayer(gradient, at: 0)
+        
+        return view
+    }()
+    
+    private let currentValueLabel: UILabel = {
+        let label = UILabel()
+        
+        label.text = "50%"
+        label.textAlignment = .right
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        addSubview(slider)
         addSubview(maximumLabel)
         addSubview(minimumLabel)
-        addSubview(slider)
+        addSubview(separatorView)
+        addSubview(currentValueLabel)
         
-        maximumLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+        currentValueLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
+        currentValueLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        currentValueLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        
+        separatorView.rightAnchor.constraint(equalTo: currentValueLabel.leftAnchor).isActive = true
+        separatorView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        separatorView.widthAnchor.constraint(equalToConstant: 0.5).isActive = true
+        separatorView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        
+        maximumLabel.rightAnchor.constraint(equalTo: separatorView.leftAnchor, constant: -10).isActive = true
         maximumLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         minimumLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
@@ -63,14 +98,32 @@ class ThresholdCell: UITableViewCell {
         slider.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         slider.addTarget(self, action: #selector(onSliderValueChanged), for: .valueChanged)
+        
+        if UserDefaults.standard.object(forKey: UserDefaultsKeys.predictionThreshold) != nil {
+            let value = UserDefaults.standard.float(forKey: UserDefaultsKeys.predictionThreshold)
+            
+            currentValueLabel.text = valueTextForPercentage(value)
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        separatorView.layer.sublayers?[0].frame = separatorView.bounds
+    }
+    
     @objc private func onSliderValueChanged(_ sender: UISlider) {
+        currentValueLabel.text = valueTextForPercentage(sender.value)
+        
         UserDefaults.standard.set(sender.value, forKey: UserDefaultsKeys.predictionThreshold)
+    }
+    
+    private func valueTextForPercentage(_ percentage: Float) -> String {
+        return "\(Int(round(percentage * 100)))%"
     }
     
 }

@@ -66,6 +66,7 @@ class ModelCell: UITableViewCell {
         textView.textContainer.maximumNumberOfLines = 1
         textView.textContainer.lineBreakMode = .byTruncatingHead
         textView.font = UIFont.preferredFont(forTextStyle: .body)
+        textView.autocorrectionType = .no
         
         textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
