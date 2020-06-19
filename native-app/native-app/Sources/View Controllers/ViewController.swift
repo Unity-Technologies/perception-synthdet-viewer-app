@@ -53,6 +53,8 @@ class ViewController: UIViewController {
         return button
     }()
     
+    private let shutterButton = ShutterButton()
+    
     private let unityView = UnityView()
     
     private lazy var urlSession: URLSession = {
@@ -73,6 +75,7 @@ class ViewController: UIViewController {
         setupNavigationBar()
         setupUnityView()
         setupModelSelectionView()
+        setupShutterButton()
         
         loadModelsFromUserDefaults()
         
@@ -120,6 +123,17 @@ class ViewController: UIViewController {
         modelSelectionButton.leftAnchor.constraint(equalTo: modelSelectionBackground.leftAnchor).isActive = true
         
         modelSelectionButton.addTarget(self, action: #selector(onChooseModelTapped), for: .touchUpInside)
+    }
+    
+    private func setupShutterButton() {
+        view.addSubview(shutterButton)
+        
+        shutterButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        shutterButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        shutterButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        shutterButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        shutterButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -25).isActive = true
     }
     
     private func loadModelsFromUserDefaults() {
