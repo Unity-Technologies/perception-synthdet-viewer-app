@@ -10,10 +10,15 @@ public class Utils
     }
 }
 
+public enum Rotation
+{
+    Left, 
+    Right, 
+    HalfCircle
+}
+
 public static class Texture2DExtensions 
 {
-    public enum Rotation { Left, Right, HalfCircle }
-    
     // Very expensive to call! Do not call this on any interval!
     public static void Rotate(this Texture2D texture, Rotation rotation)
     {

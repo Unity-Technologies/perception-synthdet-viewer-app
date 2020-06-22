@@ -10,16 +10,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private let imageWidth: CGFloat = 1280
-    
-    private var imageHeight: CGFloat {
-        imageWidth * min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-    }
-    
-    private var scaleFactor: CGFloat {
-        max(UIScreen.main.bounds.width, UIScreen.main.bounds.height) / imageWidth * UIScreen.main.nativeScale
-    }
-    
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         
@@ -57,20 +47,20 @@ class ViewController: UIViewController {
     
     private let unityView = UnityView()
     
-    private lazy var urlSession: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.isDiscretionary = true
-        config.sessionSendsLaunchEvents = true
-        return URLSession(configuration: config, delegate: self, delegateQueue: nil)
-    }()
-    
     private var filteredModels: [ModelEndpoint]?
-    private var selectedModelEndpoint: ModelEndpoint?
+    
+    private var selectedModelEndpoint: ModelEndpoint? {
+        didSet {
+            guard let url = selectedModelEndpoint?.url else { return }
+            
+            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main",
+                method: "SetUrl",
+                message: url)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        UnityEmbeddedSwift.instance?.delegate = self
         
         setupNavigationBar()
         setupUnityView()
@@ -183,71 +173,6 @@ class ViewController: UIViewController {
         popoverController?.permittedArrowDirections = [.down]
         
         present(modelChooser, animated: true)
-    }
-    
-}
-
-// MARK: - Receiving events from Unity
-extension ViewController: NativeCallsDelegate {
-    
-    func arFoundationDidReceiveCameraFrame(_ imageBytes: Data) {
-        guard let urlString = selectedModelEndpoint?.url, let url = URL(string: urlString) else {
-            logger.error("Cannot parse url from: \(String(describing: selectedModelEndpoint?.url))")
-            return
-        }
-        
-        var task = URLRequest(url: url)
-        
-        task.httpMethod = "POST"
-        task.httpBody = imageBytes
-        task.addValue("image/jpg", forHTTPHeaderField: "Content-Type")
-        
-        urlSession.dataTask(with: task).resume()
-    }
-    
-}
-
-// MARK: - Networking with backend
-extension ViewController: URLSessionDataDelegate {
-    
-    // Override needed to validate self-signed SSL certificates
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-    }
-    
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        do {
-            let classifications = try decoder.decode([ObjectClassification].self, from: data)
-                .filter { $0.score > max(UserDefaults.standard.float(forKey: UserDefaultsKeys.predictionThreshold), 0.5) }
-            
-            DispatchQueue.main.async {
-                let orientation = UIApplication.shared.statusBarOrientation.isPortrait ?
-                    BoundingBox.Rotation.left :
-                    BoundingBox.Rotation.down
-                
-                let scaledBoxes = classifications.map {
-                        ObjectClassification(label: $0.label,
-                            box: $0.box
-                                .rotated(by: orientation, in: CGSize(width: self.imageWidth, height: self.imageHeight))
-                               .scaled(by: self.scaleFactor),
-                            score: $0.score)
-                    }
-                
-                let encoder = JSONEncoder()
-                if let jsonData = try? encoder.encode(scaledBoxes),
-                    let jsonString = String(bytes: jsonData, encoding: .utf8) {
-                    UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Origin",
-                        method: "SetObjectClassificationsFromJson",
-                        message: "{\"objects\": \(jsonString)}")
-                }
-            }
-        } catch _ {
-            DispatchQueue.main.async {
-                UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Origin",
-                    method: "SetObjectClassificationsFromJson",
-                    message: "{\"objects\": []}")
-            }
-        }
     }
     
 }

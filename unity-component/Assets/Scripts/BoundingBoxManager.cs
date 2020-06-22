@@ -8,12 +8,12 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 [RequireComponent(typeof(ARRaycastManager))]
-public class BoxARManagerMain : MonoBehaviour
+public class BoundingBoxManager : MonoBehaviour
 {
     public GameObject placedPrefab;
     public ARCameraManager cameraManager;
     
-    // ARRaycastManager component used for doing raycases onto planes in AR
+    // ARRaycastManager component used for doing raycasts onto planes in AR
     private ARRaycastManager _arRaycastManager;
     
     // List of bounding boxes currently on screen
@@ -42,6 +42,12 @@ public class BoxARManagerMain : MonoBehaviour
     // Called from iOS when a new set of bounding boxes should be drawn
     public void SetObjectClassificationsFromJson(string json)
     {
+        var classifications = JsonUtility.FromJson<JsonWrapper>(json).objects.ToList();
+        SetObjectClassifications(classifications);
+    }
+
+    public void SetObjectClassifications(List<ObjectClassification> classifications)
+    {
         _boundingBoxes.RemoveAll(box =>
         {
             if (box.GetComponent<LabeledBoundingBox>().UpdatesRemaining == 0)
@@ -54,10 +60,8 @@ public class BoxARManagerMain : MonoBehaviour
         });
         
         _boundingBoxes.ForEach(box => box.GetComponent<LabeledBoundingBox>().UpdatesRemaining -= 1);
-
-        JsonUtility.FromJson<JsonWrapper>(json).objects
-            .ToList()
-            .ForEach(AddObjectClassification);
+        
+        classifications.ForEach(AddObjectClassification);
     }
 
     // Adds an ObjectClassification to the AR view, either by creating a new box or reusing an old one that is nearby
@@ -94,7 +98,7 @@ public class BoxARManagerMain : MonoBehaviour
                 .FindAll(hits => hits.Count > 0)
                 .ConvertAll(hits => hits.First().pose.position)
                 .Aggregate(0.0f, (avg, position) => 
-                    avg + (position - raycastHitPosition).magnitude / validSurroundingPointCount / 10);
+                    avg + (position - raycastHitPosition).magnitude / validSurroundingPointCount / SurroundingPixelDistance);
             
             var hitPosition = raycastHits[0].pose.position;
             var boundingBoxGameObject = FindCloseBoundingBoxForObject(objectClassification, hitPosition);

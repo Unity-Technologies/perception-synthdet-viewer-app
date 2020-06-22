@@ -17,7 +17,7 @@ public class LabeledBoundingBox : MonoBehaviour
     private string _label = "";
     private float _predictionScore;
 
-    void Awake()
+    private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
         _rectangleSpriteRenderer = rectangle.GetComponent<SpriteRenderer>();

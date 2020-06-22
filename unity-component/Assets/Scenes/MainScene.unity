@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 399875235}
   - component: {fileID: 399875234}
   m_Layer: 0
-  m_Name: ARSessionMain
+  m_Name: AR Session Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arSession: {fileID: 1273732584}
   cameraManager: {fileID: 2139333078}
+  boundingBoxManager: {fileID: 1232973445}
 --- !u!4 &399875235
 Transform:
   m_ObjectHideFlags: 0

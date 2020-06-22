@@ -120,6 +120,9 @@ class ThresholdCell: UITableViewCell {
         currentValueLabel.text = valueTextForPercentage(sender.value)
         
         UserDefaults.standard.set(sender.value, forKey: UserDefaultsKeys.predictionThreshold)
+        UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main",
+                                                                  method: "SetScoreThreshold",
+                                                                  message: String(sender.value))
     }
     
     private func valueTextForPercentage(_ percentage: Float) -> String {
