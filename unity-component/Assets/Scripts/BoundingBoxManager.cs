@@ -19,31 +19,14 @@ public class BoundingBoxManager : MonoBehaviour
     // List of bounding boxes currently on screen
     private static List<GameObject> _boundingBoxes = new List<GameObject>();
 
-    private const int SurroundingPixelDistance = 10;
-    private const float LabeledBoundingBoxScale = 0.1f;
-    private const float RectangleScale = 0.1f;
-    private const int TransientBoxUpdateCount = 1;
-    
+    private const int SurroundingPixelDistance = 10; // Amount of pixels to go out in each direction when finding distance per pixel
+    private const float LabeledBoundingBoxScale = 0.1f; // Scale of LabeledBoundingBox prefab
+    private const float RectangleScale = 0.1f; // Scale of rectangle on LabeledBoundingBox prefab
+    private const int TransientBoxUpdateCount = 1; // Amount of updates a box can go through without being reused
+
     private void Awake()
     {
         _arRaycastManager = GetComponent<ARRaycastManager>();
-    }
-
-    // JsonUtility needs this wrapper class since it cannot parse a top-level array
-    [Serializable]
-    private class JsonWrapper
-    {
-        #pragma warning disable 0649
-        public List<ObjectClassification> objects;
-        #pragma warning restore 0649
-    }
-
-    // ReSharper disable once UnusedMember.Global
-    // Called from iOS when a new set of bounding boxes should be drawn
-    public void SetObjectClassificationsFromJson(string json)
-    {
-        var classifications = JsonUtility.FromJson<JsonWrapper>(json).objects.ToList();
-        SetObjectClassifications(classifications);
     }
 
     public void SetObjectClassifications(List<ObjectClassification> classifications)

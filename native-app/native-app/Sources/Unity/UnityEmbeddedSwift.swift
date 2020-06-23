@@ -13,6 +13,8 @@ protocol NativeCallsDelegate: AnyObject {
     
     func arFoundationDidReceiveCameraFrame(_ imageBytes: Data)
     
+    func settingsJsonDidChange(_ json: Data)
+    
 }
 
 class UnityEmbeddedSwift: UIResponder {
@@ -66,7 +68,7 @@ class UnityEmbeddedSwift: UIResponder {
         return ufw?.appController() != nil
     }
     
-    func sendUnityMessageToGameObject(_ object: String, method: String, message: String) {
+    func sendUnityMessageToGameObject(_ object: String, method: String, message: String = "") {
         guard isInitialized else {
             print("Cannot send message to game object before Unity is initialized")
             return
@@ -127,6 +129,11 @@ extension UnityEmbeddedSwift: NativeCallsProtocol {
     func arFoundationDidReceiveCameraFrame(_ bytes: UnsafePointer<Int8>!, withCount count: Int32) {
         let data = Data(bytes: bytes, count: Int(count))
         delegate?.arFoundationDidReceiveCameraFrame(data)
+    }
+    
+    func settingsJsonDidChange(_ json: UnsafePointer<Int8>!, withCount count: Int32) {
+        let data = Data(bytes: json, count: Int(count))
+        delegate?.settingsJsonDidChange(data)
     }
     
 }

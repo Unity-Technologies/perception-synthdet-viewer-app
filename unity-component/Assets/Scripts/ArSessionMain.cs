@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Models;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-
-#if UNITY_IOS
-public static class NativeApi {
-    [DllImport("__Internal")]
-    public static extern void arFoundationDidReceiveCameraFrame(byte[] bytes, int count);
-}
-#endif
 
 public class ArSessionMain : MonoBehaviour
 {
@@ -27,6 +19,7 @@ public class ArSessionMain : MonoBehaviour
     public ARSession arSession;
     public ARCameraManager cameraManager;
     public BoundingBoxManager boundingBoxManager;
+    public SettingsManager settingsManager;
 
     private float _lastTime;
 
@@ -70,7 +63,14 @@ public class ArSessionMain : MonoBehaviour
         }
         _lastTime = Time.fixedTime;
         
-        if (!cameraManager.TryGetLatestImage(out var image) || _url == null)
+        var urlString = settingsManager.SettingsModel.activeEndpoint?.url;
+        if (!Uri.IsWellFormedUriString(urlString, UriKind.Absolute))
+        {
+            Debug.LogErrorFormat("Invalid model endpoint URL: {0}", urlString);
+            return;
+        }
+        
+        if (!cameraManager.TryGetLatestImage(out var image))
         {
             return;
         }
@@ -120,8 +120,8 @@ public class ArSessionMain : MonoBehaviour
         var jpgData = ConvertBufferToJpg(imageData, request.conversionParams);
         imageData.Dispose();
         request.Dispose();
-
-        var webRequest = GetRequestForImage(jpgData, _url);
+        
+        var webRequest = GetRequestForImage(jpgData, settingsManager.SettingsModel.activeEndpoint?.url);
         yield return webRequest.SendWebRequest();
 
         if (webRequest.isNetworkError)
@@ -131,13 +131,13 @@ public class ArSessionMain : MonoBehaviour
         }
 
         webRequest.uploadHandler.Dispose();
-        var text = "{\"objects\": " + webRequest.downloadHandler.text + "}";
+        var text = "{\"objects\":" + webRequest.downloadHandler.text + "}";
 
-        // If JSON output contains "code", the response was not a 200 OK
+        // If JSON output does not have an array, the response was not a 200 OK
         // I wish JsonUtility had error handling
-        if (text.Contains("code"))
+        if (!text.Contains("["))
         {
-            Debug.LogErrorFormat("Prediction error: {0}", webRequest.downloadHandler.text);
+            Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
             webRequest.downloadHandler.Dispose();
             yield return null;
         }
@@ -145,8 +145,9 @@ public class ArSessionMain : MonoBehaviour
 
         var rotation = Screen.orientation == ScreenOrientation.Landscape ? Rotation.HalfCircle : Rotation.Left;
         
+        Console.WriteLine("About to parse");
         var classifications = JsonUtility.FromJson<JsonWrapper>(text).objects
-            .FindAll(it => it.score >= _scoreThreshold)
+            .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold)
             .ConvertAll(old => new ObjectClassification(old.label,
                 old.box
                     .RotatedBy(rotation, new Vector2(Width, Height))

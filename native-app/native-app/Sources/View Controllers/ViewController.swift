@@ -47,16 +47,24 @@ class ViewController: UIViewController {
     
     private let unityView = UnityView()
     
-    private var filteredModels: [ModelEndpoint]?
+    private let settingsViewController = SettingsViewController()
     
-    private var selectedModelEndpoint: ModelEndpoint? {
+    private var settings: SettingsModel? {
         didSet {
-            guard let url = selectedModelEndpoint?.url else { return }
+            modelSelectionButton.setTitle(settings?.activeEndpoint?.name ??
+                settings?.activeEndpoint?.url ??
+                "Choose Model", for: .normal)
             
-            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main",
-                method: "SetUrl",
-                message: url)
+            settingsViewController.settingsModel = settings
         }
+    }
+    
+    private var filteredModels: [ModelEndpoint]? {
+        return settings?.modelEndpoints.filter { $0.url != nil && $0.url != "" }
+    }
+    
+    private var namesForFilteredModels: [String]? {
+        return filteredModels?.map { $0.name ?? $0.url! }
     }
 
     override func viewDidLoad() {
@@ -67,12 +75,13 @@ class ViewController: UIViewController {
         setupModelSelectionView()
         setupShutterButton()
         
-        loadModelsFromUserDefaults()
+        UnityEmbeddedSwift.instance?.delegate = self
         
-        if let filteredModels = filteredModels, filteredModels.count > 0 {
-            selectedModelEndpoint = filteredModels.first
-            
-            modelSelectionButton.setTitle(selectedModelEndpoint?.name ?? selectedModelEndpoint?.url, for: .normal)
+        settingsViewController.dismissHandler = {
+            if let filteredModels = self.filteredModels, let model = self.settings?.activeEndpoint,
+                !filteredModels.contains(model) {
+                self.settings?.activeEndpoint = filteredModels.first
+            }
         }
     }
     
@@ -126,46 +135,29 @@ class ViewController: UIViewController {
         shutterButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -25).isActive = true
     }
     
-    private func loadModelsFromUserDefaults() {
-        let decoder = JSONDecoder()
-        
-        if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models),
-            let models = try? decoder.decode([ModelEndpoint].self, from: data) {
-            
-            filteredModels = models.filter { $0.url != nil && $0.url != "" }
-        }
-    }
-    
     @objc private func onSettingsTapped(_ sender: UIBarButtonItem) {
-        let settingsVc = SettingsViewController()
-        let settingsNavVc = UINavigationController(rootViewController: settingsVc)
-        
+        let settingsNavVc = UINavigationController(rootViewController: settingsViewController)
         settingsNavVc.modalPresentationStyle = .pageSheet
-        settingsVc.dismissHandler = {
-            self.loadModelsFromUserDefaults()
-            
-            if let filteredModels = self.filteredModels, let model = self.selectedModelEndpoint, !filteredModels.contains(model) {
-                self.selectedModelEndpoint = filteredModels.first
-                
-                self.modelSelectionButton.setTitle(self.selectedModelEndpoint?.name ?? self.selectedModelEndpoint?.url, for: .normal)
-            }
-        }
-        
         present(settingsNavVc, animated: true)
     }
     
     @objc private func onChooseModelTapped(_ sender: UIButton) {
-        guard let filteredModels = filteredModels, filteredModels.count > 0 else { return }
-        
-        let names = filteredModels.map { $0.name ?? $0.url! }
+        guard let filteredModels = filteredModels, filteredModels.count > 0,
+            let names = namesForFilteredModels else { return }
         
         let modelChooser = ActionListViewController(items: names)
         modelChooser.actionSelectedHandler = { index in
-            self.selectedModelEndpoint = filteredModels[index]
+            self.settings?.activeEndpoint = filteredModels[index]
             
-            self.modelSelectionButton.setTitle(names[index], for: .normal)
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(self.settings?.activeEndpoint),
+                let json = String(bytes: encoded, encoding: .utf8) {
+                UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings",
+                                                                          method: "SetActiveEndpointFromJson",
+                                                                          message: json)
+            }
         }
-        modelChooser.selectedIndex = filteredModels.firstIndex(where: { $0 == selectedModelEndpoint }) ?? 0
+        modelChooser.selectedIndex = filteredModels.firstIndex(where: { $0 == settings?.activeEndpoint })
         modelChooser.modalPresentationStyle = .popover
         
         let popoverController = modelChooser.popoverPresentationController
@@ -173,6 +165,22 @@ class ViewController: UIViewController {
         popoverController?.permittedArrowDirections = [.down]
         
         present(modelChooser, animated: true)
+    }
+    
+}
+
+extension ViewController: NativeCallsDelegate {
+    
+    func arFoundationDidReceiveCameraFrame(_ imageBytes: Data) {
+        // Do nothing, this method is unused
+    }
+    
+    func settingsJsonDidChange(_ json: Data) {
+        let decoder = JSONDecoder()
+        
+        if let settings = try? decoder.decode(SettingsModel.self, from: json) {
+            self.settings = settings
+        }
     }
     
 }

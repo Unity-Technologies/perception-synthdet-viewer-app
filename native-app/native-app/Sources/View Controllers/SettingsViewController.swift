@@ -18,7 +18,20 @@ class SettingsViewController: UITableViewController {
         
     }
     
+    private var threshold: Float = 0.5
     private var models: [ModelEndpoint] = []
+    
+    public var settingsModel: SettingsModel? {
+        didSet {
+            guard let settings = settingsModel else { return }
+            
+            threshold = settings.predictionScoreThreshold
+            models = settings.modelEndpoints
+            
+            tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+            tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+        }
+    }
     
     private var editModelsButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
@@ -49,22 +62,15 @@ class SettingsViewController: UITableViewController {
         
         navigationItem.leftBarButtonItem = editModelsButton
         navigationItem.rightBarButtonItem = doneButton
-        
-        let decoder = JSONDecoder()
-        if let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.models),
-            let decoded = try? decoder.decode([ModelEndpoint].self, from: data) {
-            
-            models = decoded
-            tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(models) {
-            UserDefaults.standard.set(encoded, forKey: UserDefaultsKeys.models)
+        if let encoded = try? encoder.encode(settingsModel), let json = String(bytes: encoded, encoding: .utf8) {
+            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings", method: "SetSettingsModelFromJson", message: json)
+            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings", method: "SaveSettings")
         }
         
         dismissHandler?()
@@ -131,7 +137,14 @@ extension SettingsViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            return tableView.dequeueReusableCell(withIdentifier: Keys.thresholdCell, for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: Keys.thresholdCell, for: indexPath)
+            
+            if let thresholdCell = cell as? ThresholdCell {
+                thresholdCell.value = threshold
+                thresholdCell.valueChangeHandler = { self.threshold = $0 }
+            }
+            
+            return cell
         } else if indexPath.section == 1 {
             if indexPath.row == models.count {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Keys.addModelCell, for: indexPath)

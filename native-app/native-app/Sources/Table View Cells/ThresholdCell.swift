@@ -15,7 +15,7 @@ class ThresholdCell: UITableViewCell {
         
         slider.minimumValue = 0.5
         slider.maximumValue = 1.0
-        slider.value = UserDefaults.standard.float(forKey: UserDefaultsKeys.predictionThreshold)
+        slider.value = 0.5
         
         slider.translatesAutoresizingMaskIntoConstraints = false
         
@@ -68,6 +68,17 @@ class ThresholdCell: UITableViewCell {
         return label
     }()
     
+    public var valueChangeHandler: ((Float) -> Void)?
+    
+    public var value: Float = 0.5 {
+        didSet {
+            currentValueLabel.text = valueTextForPercentage(value)
+            slider.value = value
+            
+            valueChangeHandler?(value)
+        }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -98,12 +109,6 @@ class ThresholdCell: UITableViewCell {
         slider.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         slider.addTarget(self, action: #selector(onSliderValueChanged), for: .valueChanged)
-        
-        if UserDefaults.standard.object(forKey: UserDefaultsKeys.predictionThreshold) != nil {
-            let value = UserDefaults.standard.float(forKey: UserDefaultsKeys.predictionThreshold)
-            
-            currentValueLabel.text = valueTextForPercentage(value)
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -117,12 +122,7 @@ class ThresholdCell: UITableViewCell {
     }
     
     @objc private func onSliderValueChanged(_ sender: UISlider) {
-        currentValueLabel.text = valueTextForPercentage(sender.value)
-        
-        UserDefaults.standard.set(sender.value, forKey: UserDefaultsKeys.predictionThreshold)
-        UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main",
-                                                                  method: "SetScoreThreshold",
-                                                                  message: String(sender.value))
+        value = sender.value
     }
     
     private func valueTextForPercentage(_ percentage: Float) -> String {

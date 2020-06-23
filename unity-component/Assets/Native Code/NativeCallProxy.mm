@@ -17,5 +17,9 @@ extern "C" {
     void arFoundationDidReceiveCameraFrame(const char* bytes, int count) {
         return [api arFoundationDidReceiveCameraFrame:bytes withCount:count];
     }
+    
+    void settingsJsonDidChange(const char* json, int count) {
+        return [api settingsJsonDidChange:json withCount:count];
+    }
 }
 

@@ -21,6 +21,7 @@
 		3286CB1024981B3000F24461 /* ModelEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB0F24981B3000F24461 /* ModelEndpoint.swift */; };
 		3286CB152499415700F24461 /* ActionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB142499415700F24461 /* ActionListViewController.swift */; };
 		3286CB17249BC89800F24461 /* ShutterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB16249BC89800F24461 /* ShutterButton.swift */; };
+		3286CB1924A167E600F24461 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB1824A167E600F24461 /* SettingsModel.swift */; };
 		32883A2924881133005D0FE1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32883A2824881133005D0FE1 /* AppDelegate.swift */; };
 		32883A2B24881133005D0FE1 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32883A2A24881133005D0FE1 /* SceneDelegate.swift */; };
 		32883A2D24881133005D0FE1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32883A2C24881133005D0FE1 /* ViewController.swift */; };
@@ -72,6 +73,7 @@
 		3286CB0F24981B3000F24461 /* ModelEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelEndpoint.swift; sourceTree = "<group>"; };
 		3286CB142499415700F24461 /* ActionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionListViewController.swift; sourceTree = "<group>"; };
 		3286CB16249BC89800F24461 /* ShutterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterButton.swift; sourceTree = "<group>"; };
+		3286CB1824A167E600F24461 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		32883A2524881133005D0FE1 /* Unity SynthDet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unity SynthDet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32883A2824881133005D0FE1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32883A2A24881133005D0FE1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				3217D445248EE90D005A1B58 /* ObjectClassification.swift */,
 				3217D447248EE937005A1B58 /* BoundingBox.swift */,
 				3286CB0F24981B3000F24461 /* ModelEndpoint.swift */,
+				3286CB1824A167E600F24461 /* SettingsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -344,6 +347,7 @@
 			files = (
 				3217D43B248AD4A9005A1B58 /* UnityView.swift in Sources */,
 				3286CB152499415700F24461 /* ActionListViewController.swift in Sources */,
+				3286CB1924A167E600F24461 /* SettingsModel.swift in Sources */,
 				3217D43D248ADCDD005A1B58 /* Logging.swift in Sources */,
 				32883A2D24881133005D0FE1 /* ViewController.swift in Sources */,
 				3286CB1024981B3000F24461 /* ModelEndpoint.swift in Sources */,
