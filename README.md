@@ -15,14 +15,20 @@ Before building, make sure your Unity installation has the iOS Build Support mod
 3. Open the project in Xcode by opening synthdet-demo-app.xcworkspace.
 4. Click on _native-app_ with the blue Xcode file icon in the Project navigator (the pane to the left of the Xcode window).
 ![native-app Project](docs/images/native-app-project.png)
+
 5. Click on the _native-app_ target, and select Signing & Capabilities.
 ![native-app Target and Signing](docs/images/signing.png)
+
 6. Check Automatically manage signing if you are using your own Apple ID to sign the app. The Team should be capable of capable of code signing to run on a real iOS device (this app will not work in the SImulator). Any free or paid Apple Developer account can be used for the Team. The Bundle Identifier can be set to any string that is not in use as a bundle identifier already.
 7. In the Project navigator on the left, select Unity-iPhone/Libraries/Native Code/NativeCallProxy.h. 
 ![NativeCallsProxy.h location](docs/images/header-location.png)
+
 8. On the right side of the Xcode window, make sure UnityFramework is checked, and change the dropdown next to it from Project to Public.
-9. In the Project navigator on the left, select Unity-iPhone/Data, and like step 8, make sure UnityFramework is checked. The visibility is already Public for this folder. 
+9. In the Project navigator on the left, select Unity-iPhone/Data, and like step 8, make sure UnityFramework is checked. The visibility is already Public for this folder.
+<br/>
+
 ![NativeCallsProxy.h visibility](docs/images/header-visibility.png)
+
 10. Make sure your iOS device is plugged in, and build the _native-app_ scheme in Xcode by selecing it in the top-left corner, and selecting the iOS device as the destination. Then click the play button. You will have to let your device trust the Mac it is plugged into if it is the first time using your iOS device on your Mac. 
 
 ### After build and install
