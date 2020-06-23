@@ -133,6 +133,8 @@ class ViewController: UIViewController {
         shutterButton.heightAnchor.constraint(equalToConstant: 80).isActive = true
         shutterButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         shutterButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -25).isActive = true
+        
+        shutterButton.addTarget(self, action: #selector(onShutterButtonTapped), for: .touchUpInside)
     }
     
     @objc private func onSettingsTapped(_ sender: UIBarButtonItem) {
@@ -165,6 +167,10 @@ class ViewController: UIViewController {
         popoverController?.permittedArrowDirections = [.down]
         
         present(modelChooser, animated: true)
+    }
+    
+    @objc private func onShutterButtonTapped(_ sender: UIButton) {
+        UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main", method: "CaptureWithFormat", message: "Both")
     }
     
 }

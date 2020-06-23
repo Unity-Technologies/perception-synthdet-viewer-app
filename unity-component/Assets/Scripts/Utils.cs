@@ -3,10 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Utils
+public class Utils : MonoBehaviour
 {
-    public static Color ColorFromRgba255(short r, short g, short b, short a = 255) {
+    private Utils() { } // No instantiation
+
+    public static Color ColorFromRgba255(short r, short g, short b, short a = 255)
+    {
         return new Color((float) r / 255, (float) g / 255, (float) b / 255, (float) a / 255);
+    }
+
+    // Take a "screenshot" of a camera's Render Texture
+    public static Texture2D TakeScreenshotOfCamera(Camera camera, int width, int height)
+    {
+        var currentRt = RenderTexture.active;
+        var currentCameraTexture = camera.targetTexture;
+        
+        var rt = new RenderTexture(width, height, 24);
+        var image = new Texture2D(rt.width, rt.height);
+
+        camera.targetTexture = rt;
+        camera.Render();
+        
+        RenderTexture.active = camera.targetTexture;
+
+        image.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        image.Apply();
+
+        RenderTexture.active = currentRt;
+        camera.targetTexture = currentCameraTexture;
+        Destroy(rt);
+
+        return image;
     }
 }
 

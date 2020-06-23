@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Components;
+using GameObjects;
 using Models;
 using Unity.Collections;
 using UnityEngine;
@@ -8,6 +10,7 @@ using UnityEngine.Networking;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
+[RequireComponent(typeof(CaptureExportManager))]
 public class ArSessionMain : MonoBehaviour
 {
     private const float Width = 1280;
@@ -15,6 +18,8 @@ public class ArSessionMain : MonoBehaviour
     private static float ScaleFactor => Math.Max(Screen.width, Screen.height) / Width;
 
     private const float UpdatesPerSecond = 5;
+
+    private CaptureExportManager _captureExportManager;
     
     public ARSession arSession;
     public ARCameraManager cameraManager;
@@ -23,9 +28,14 @@ public class ArSessionMain : MonoBehaviour
 
     private float _lastTime;
 
-    private string _url;
-    private float _scoreThreshold = 0.5f;
-    
+    private List<ObjectClassification> _currentClassifications;
+    private byte[] _currentJpgBytes;
+
+    private void Awake()
+    {
+        _captureExportManager = GetComponent<CaptureExportManager>();
+    }
+
     private IEnumerator Start() {
         if (ARSession.state == ARSessionState.None ||
             ARSession.state == ARSessionState.CheckingAvailability)
@@ -79,18 +89,32 @@ public class ArSessionMain : MonoBehaviour
         image.Dispose();
     }
 
-    // Can be called by iOS to set URL
+    // Can be called from native platforms to capture current image
     // ReSharper disable once UnusedMember.Global
-    public void SetUrl(string url)
+    public void CaptureWithFormat(string formatString)
     {
-        _url = url;
-    }
-    
-    // Can be called by iOS to set minimum score; that's why it's a string here and not a float
-    // ReSharper disable once UnusedMember.Global
-    public void SetScoreThreshold(string score)
-    {
-        _scoreThreshold = float.Parse(score);
+        var exportFormat = CaptureExportManager.CaptureExportFormatFromString(formatString);
+
+        if (!exportFormat.HasValue)
+        {
+            Debug.LogErrorFormat("Cannot parse capture export format from string: {0}", formatString);
+            return;
+        }
+
+        byte[] labeledImageBytes = null;
+        if (exportFormat == CaptureExportManager.CaptureExportFormat.Both ||
+            exportFormat == CaptureExportManager.CaptureExportFormat.LabeledImage)
+        {
+            var currentCamera = cameraManager.GetComponent<Camera>();
+            var image = Utils.TakeScreenshotOfCamera(currentCamera, Screen.width, Screen.height);
+            labeledImageBytes = image.EncodeToJPG();
+            Destroy(image);
+        }
+
+        _captureExportManager.ExportCaptureAsFormat(exportFormat.Value, 
+            labeledImageBytes, 
+            _currentJpgBytes, 
+            _currentClassifications);
     }
 
     private IEnumerator ProcessImage(XRCameraImage image)
@@ -117,11 +141,11 @@ public class ArSessionMain : MonoBehaviour
         }
 
         var imageData = request.GetData<byte>();
-        var jpgData = ConvertBufferToJpg(imageData, request.conversionParams);
+         _currentJpgBytes = ConvertBufferToJpg(imageData, request.conversionParams);
         imageData.Dispose();
         request.Dispose();
         
-        var webRequest = GetRequestForImage(jpgData, settingsManager.SettingsModel.activeEndpoint?.url);
+        var webRequest = GetRequestForImage(_currentJpgBytes, settingsManager.SettingsModel.activeEndpoint?.url);
         yield return webRequest.SendWebRequest();
 
         if (webRequest.isNetworkError)
@@ -143,11 +167,14 @@ public class ArSessionMain : MonoBehaviour
         }
         webRequest.downloadHandler.Dispose();
 
-        var rotation = Screen.orientation == ScreenOrientation.Landscape ? Rotation.HalfCircle : Rotation.Left;
+        var rotation = Screen.orientation == ScreenOrientation.Landscape || 
+                       Screen.orientation == ScreenOrientation.LandscapeLeft 
+            ? Rotation.HalfCircle : Rotation.Left;
+
+        _currentClassifications = JsonUtility.FromJson<JsonWrapper>(text).objects
+            .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold);
         
-        Console.WriteLine("About to parse");
-        var classifications = JsonUtility.FromJson<JsonWrapper>(text).objects
-            .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold)
+        var classifications = _currentClassifications
             .ConvertAll(old => new ObjectClassification(old.label,
                 old.box
                     .RotatedBy(rotation, new Vector2(Width, Height))
@@ -159,8 +186,7 @@ public class ArSessionMain : MonoBehaviour
 
     private byte[] ConvertBufferToJpg(NativeArray<byte> buffer, XRCameraImageConversionParams conversionParams)
     {
-        var texture = new Texture2D(
-            conversionParams.outputDimensions.x,
+        var texture = new Texture2D(conversionParams.outputDimensions.x,
             conversionParams.outputDimensions.y,
             conversionParams.outputFormat,
             false);
