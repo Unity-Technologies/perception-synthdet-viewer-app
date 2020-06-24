@@ -32,14 +32,14 @@ class AddModelCell: UITableViewCell {
         addButton.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         addButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
-        addButton.addTarget(self, action: #selector(onAddButtonTapped), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(onShareButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc private func onAddButtonTapped(_ sender: UIButton) {
+    @objc private func onShareButtonTapped(_ sender: UIButton) {
         addButtonTappedHandler?()
     }
     

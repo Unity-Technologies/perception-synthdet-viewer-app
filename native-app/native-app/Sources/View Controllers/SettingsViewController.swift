@@ -15,6 +15,7 @@ class SettingsViewController: UITableViewController {
         static let thresholdCell = "ThresholdCell"
         static let modelCell = "ModelCell"
         static let addModelCell = "AddModelCell"
+        static let shareCapturesCell = "ShareCapturesCell"
         
     }
     
@@ -32,6 +33,7 @@ class SettingsViewController: UITableViewController {
         tableView.register(ThresholdCell.self, forCellReuseIdentifier: Keys.thresholdCell)
         tableView.register(ModelCell.self, forCellReuseIdentifier: Keys.modelCell)
         tableView.register(AddModelCell.self, forCellReuseIdentifier: Keys.addModelCell)
+        tableView.register(ShareCapturesCell.self, forCellReuseIdentifier: Keys.shareCapturesCell)
         
         tableView.allowsSelection = false
     }
@@ -112,19 +114,26 @@ class SettingsViewController: UITableViewController {
         tableView.endUpdates()
     }
     
+    private var documentsDirectory: URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        return documentsDirectory
+    }
+    
 }
 
 // MARK: - UITableViewDelegate methods
 extension SettingsViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
         case 1: return (settingsModel?.modelEndpoints.count ?? 0) + (tableView.isEditing ? 1 : 0)
+        case 2: return 1
         default: return 0
         }
     }
@@ -133,6 +142,7 @@ extension SettingsViewController {
         switch section {
         case 0: return "Prediction Score Threshold"
         case 1: return "Model Endpoints"
+        case 2: return "Capture Export Settings"
         default: return nil
         }
     }
@@ -164,6 +174,18 @@ extension SettingsViewController {
                 
                 return cell
             }
+        } else if indexPath.section == 2 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: Keys.shareCapturesCell, for: indexPath)
+            
+            (cell as? ShareCapturesCell)?.shareButtonTappedHandler = {
+                let folderUrl = self.documentsDirectory.appendingPathComponent("Captures")
+                
+                let activityViewController = UIActivityViewController(activityItems: [folderUrl], applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = cell.contentView
+                self.present(activityViewController, animated: true)
+            }
+            
+            return cell
         } else {
             fatalError("Bad index path")
         }
