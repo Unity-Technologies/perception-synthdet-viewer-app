@@ -7,7 +7,7 @@ namespace GameObjects
     {
         private const string PlayerPrefsKey = "com.unity3d.synthdet-demo-app.SettingsPlayerPrefKey";
     
-        private SettingsModel _settingsModel = new SettingsModel();
+        private SettingsModel _settingsModel;
     
         public SettingsModel SettingsModel
         {
@@ -25,6 +25,10 @@ namespace GameObjects
             if (PlayerPrefs.HasKey(PlayerPrefsKey))
             {
                 SetSettingsModelFromJson(PlayerPrefs.GetString(PlayerPrefsKey));
+            }
+            else
+            {
+                SettingsModel = new SettingsModel();
             }
         }
 

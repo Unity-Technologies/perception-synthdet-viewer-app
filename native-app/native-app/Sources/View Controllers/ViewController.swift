@@ -51,16 +51,25 @@ class ViewController: UIViewController {
     
     private var settings: SettingsModel? {
         didSet {
-            modelSelectionButton.setTitle(settings?.activeEndpoint?.name ??
-                settings?.activeEndpoint?.url ??
-                "Choose Model", for: .normal)
+            if let filteredModels = filteredModels, let model = settings?.activeEndpoint,
+                !filteredModels.contains(model) {
+                settings?.activeEndpoint = filteredModels.first
+            }
+            
+            if let endpoint = settings?.activeEndpoint, endpoint.isValid {
+                modelSelectionButton.setTitle(settings?.activeEndpoint?.name ??
+                    settings?.activeEndpoint?.url!, for: .normal)
+            } else {
+                modelSelectionButton.setTitle("Choose Model", for: .normal)
+            }
             
             settingsViewController.settingsModel = settings
+            settingsViewController.reloadSettings()
         }
     }
     
     private var filteredModels: [ModelEndpoint]? {
-        return settings?.modelEndpoints.filter { $0.url != nil && $0.url != "" }
+        return settings?.modelEndpoints.filter { $0.isValid }
     }
     
     private var namesForFilteredModels: [String]? {
@@ -76,19 +85,13 @@ class ViewController: UIViewController {
         setupShutterButton()
         
         UnityEmbeddedSwift.instance?.delegate = self
-        
-        settingsViewController.dismissHandler = {
-            if let filteredModels = self.filteredModels, let model = self.settings?.activeEndpoint,
-                !filteredModels.contains(model) {
-                self.settings?.activeEndpoint = filteredModels.first
-            }
-        }
     }
     
     private func setupNavigationBar() {
         navigationItem.title = "Unity SynthDet"
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(onSettingsTapped))
+        navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
     private func setupUnityView() {
@@ -186,6 +189,7 @@ extension ViewController: NativeCallsDelegate {
         
         if let settings = try? decoder.decode(SettingsModel.self, from: json) {
             self.settings = settings
+            navigationItem.rightBarButtonItem?.isEnabled = true
         }
     }
     

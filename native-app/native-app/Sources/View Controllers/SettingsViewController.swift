@@ -18,20 +18,7 @@ class SettingsViewController: UITableViewController {
         
     }
     
-    private var threshold: Float = 0.5
-    private var models: [ModelEndpoint] = []
-    
-    public var settingsModel: SettingsModel? {
-        didSet {
-            guard let settings = settingsModel else { return }
-            
-            threshold = settings.predictionScoreThreshold
-            models = settings.modelEndpoints
-            
-            tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
-            tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
-        }
-    }
+    public var settingsModel: SettingsModel?
     
     private var editModelsButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
@@ -56,6 +43,10 @@ class SettingsViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if settingsModel == nil {
+            settingsModel = SettingsModel(predictionScoreThreshold: 0.75, modelEndpoints: [], activeEndpoint: nil)
+        }
+        
         editModelsButton = UIBarButtonItem(title: "Edit Models", style: .plain, target: self, action: #selector(onEditModelsTapped))
         doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onDoneTapped))
         doneEditingModelsButton = UIBarButtonItem(title: "Done Editing", style: .done, target: self, action: #selector(onDoneEditingModelsTapped))
@@ -76,7 +67,14 @@ class SettingsViewController: UITableViewController {
         dismissHandler?()
     }
     
+    public func reloadSettings() {
+        tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+        tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
+    }
+    
     @objc private func onEditModelsTapped(_ sender: UIBarButtonItem) {
+        guard let models = settingsModel?.modelEndpoints else { return }
+        
         tableView.isEditing = true
         
         navigationItem.leftBarButtonItem = nil
@@ -92,6 +90,8 @@ class SettingsViewController: UITableViewController {
     }
     
     @objc private func onDoneEditingModelsTapped(_ sender: UIBarButtonItem) {
+        guard let models = settingsModel?.modelEndpoints else { return }
+        
         tableView.isEditing = false
         
         navigationItem.leftBarButtonItem = editModelsButton
@@ -103,10 +103,12 @@ class SettingsViewController: UITableViewController {
     }
     
     private func onAddModelButtonTapped() {
-        models.append(ModelEndpoint(name: nil, url: nil))
+        guard let models = settingsModel?.modelEndpoints else { return }
+        
+        settingsModel?.modelEndpoints.append(ModelEndpoint(name: nil, url: nil))
         
         tableView.beginUpdates()
-        tableView.insertRows(at: [IndexPath(row: models.count - 1, section: 1)], with: .top)
+        tableView.insertRows(at: [IndexPath(row: models.count, section: 1)], with: .top)
         tableView.endUpdates()
     }
     
@@ -122,7 +124,7 @@ extension SettingsViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
-        case 1: return models.count + (tableView.isEditing ? 1 : 0)
+        case 1: return (settingsModel?.modelEndpoints.count ?? 0) + (tableView.isEditing ? 1 : 0)
         default: return 0
         }
     }
@@ -140,13 +142,13 @@ extension SettingsViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: Keys.thresholdCell, for: indexPath)
             
             if let thresholdCell = cell as? ThresholdCell {
-                thresholdCell.value = threshold
-                thresholdCell.valueChangeHandler = { self.threshold = $0 }
+                thresholdCell.value = settingsModel?.predictionScoreThreshold ?? 0.5
+                thresholdCell.valueChangeHandler = { self.settingsModel?.predictionScoreThreshold = $0 }
             }
             
             return cell
         } else if indexPath.section == 1 {
-            if indexPath.row == models.count {
+            if let models = settingsModel?.modelEndpoints, indexPath.row == models.count {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Keys.addModelCell, for: indexPath)
                 (cell as? AddModelCell)?.addButtonTappedHandler = onAddModelButtonTapped
                 
@@ -154,7 +156,7 @@ extension SettingsViewController {
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Keys.modelCell, for: indexPath)
                 
-                if let modelCell = cell as? ModelCell {
+                if let modelCell = cell as? ModelCell, let models = settingsModel?.modelEndpoints {
                     modelCell.row = indexPath.row
                     modelCell.modelEndpoint = models[indexPath.row]
                     modelCell.delegate = self
@@ -168,12 +170,12 @@ extension SettingsViewController {
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return indexPath.section == 1 && indexPath.row < models.count
+        return indexPath.section == 1 && indexPath.row < settingsModel?.modelEndpoints.count ?? 0
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            models.remove(at: indexPath.row)
+            settingsModel?.modelEndpoints.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
@@ -184,7 +186,7 @@ extension SettingsViewController: ModelCellDelegate {
     
     func modelCell(_ modelCell: ModelCell, didChangeModel modelEndpoint: ModelEndpoint?) {
         if let row = modelCell.row, let modelEndpoint = modelEndpoint {
-            models[row] = modelEndpoint
+            settingsModel?.modelEndpoints[row] = modelEndpoint
         }
     }
     

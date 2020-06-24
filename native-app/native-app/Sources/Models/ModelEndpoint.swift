@@ -14,4 +14,8 @@ struct ModelEndpoint: Codable, Equatable {
     
     var url: String?
     
+    var isValid: Bool {
+        return url != nil && (url != "" || name != "")
+    }
+    
 }

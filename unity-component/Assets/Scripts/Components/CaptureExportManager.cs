@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 using Models;
 using UnityEngine;
@@ -19,8 +21,17 @@ namespace Components
         private const string FolderName = "Captures";
         private const string LabeledImagesFolder = "LabeledImages";
 
-        private static readonly string StoragePath = Path.Combine(Application.persistentDataPath, FolderName);
-        private static readonly string LabeledImagesPath = Path.Combine(StoragePath, LabeledImagesFolder);
+        private static string _storagePath;
+        private static string _labeledImagesPath;
+
+        private void Start()
+        {
+            _storagePath = Path.Combine(Application.persistentDataPath, FolderName);
+            _labeledImagesPath = Path.Combine(_storagePath, LabeledImagesFolder);
+            
+            Directory.CreateDirectory(_storagePath);
+            Directory.CreateDirectory(_labeledImagesPath);
+        }
 
         public static CaptureExportFormat? CaptureExportFormatFromString(string s)
         {
@@ -65,8 +76,37 @@ namespace Components
             }
             
             Debug.Log("Saving capture of current bounding boxes");
+
+            if (format == CaptureExportFormat.LabeledImage || format == CaptureExportFormat.Both)
+            {
+                SaveLabeledImage(labeledImageBytes);
+            }
             
-            // TODO: Save image
+            // TODO: Save original image
         }
+
+        private void SaveLabeledImage(byte[] labeledImageBytes)
+        {
+            Console.WriteLine(Directory.GetFiles(_labeledImagesPath).ToList().Count);
+            var maxNumber = Directory.GetFiles(_labeledImagesPath).ToList()
+                .ConvertAll(it =>
+                {
+                    var afterDashIndex = it.LastIndexOf("-", StringComparison.Ordinal) + 1;
+                    var dotIndex = it.LastIndexOf(".", StringComparison.Ordinal);
+
+                    return int.Parse(it.Substring(afterDashIndex, dotIndex - afterDashIndex));
+                })
+                .DefaultIfEmpty(0)
+                .Max();
+
+            // Save number is 1 plus the maximum previous save number
+            var filePath = Path.Combine(_labeledImagesPath, LabeledImageFileNameForNumber(maxNumber + 1));
+            
+            File.WriteAllBytes(filePath, labeledImageBytes);
+            
+            Debug.LogFormat("Saved labeled image to {0}", filePath);
+        }
+
+        private string LabeledImageFileNameForNumber(int n) => $"labeled-{n}.jpg";
     }
 }
