@@ -41,7 +41,8 @@ public enum Rotation
 {
     Left, 
     Right, 
-    HalfCircle
+    HalfCircle,
+    Up
 }
 
 public static class Texture2DExtensions 

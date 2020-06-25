@@ -114,6 +114,7 @@ public class ArSessionMain : MonoBehaviour
         _captureExportManager.ExportCaptureAsFormat(exportFormat.Value, 
             labeledImageBytes, 
             _currentJpgBytes, 
+            new Vector2Int((int) Width, (int) Height), 
             _currentClassifications);
     }
 
@@ -151,7 +152,7 @@ public class ArSessionMain : MonoBehaviour
         if (webRequest.isNetworkError)
         {
             Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
-            yield return null;
+            yield break;
         }
 
         webRequest.uploadHandler.Dispose();
@@ -163,25 +164,42 @@ public class ArSessionMain : MonoBehaviour
         {
             Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
             webRequest.downloadHandler.Dispose();
-            yield return null;
+            yield break;
         }
         webRequest.downloadHandler.Dispose();
 
-        var rotation = Screen.orientation == ScreenOrientation.Landscape || 
-                       Screen.orientation == ScreenOrientation.LandscapeLeft 
-            ? Rotation.HalfCircle : Rotation.Left;
+        var rotation = RotationForScreenOrientation();
+        if (!rotation.HasValue)
+        {
+            Debug.LogErrorFormat("Invalid screen orientation: {0}", Screen.orientation);
+            yield break;
+        }
 
         _currentClassifications = JsonUtility.FromJson<JsonWrapper>(text).objects
             .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold);
         
         var classifications = _currentClassifications
             .ConvertAll(old => new ObjectClassification(old.label,
+                old.label_id,
                 old.box
-                    .RotatedBy(rotation, new Vector2(Width, Height))
+                    .RotatedBy(rotation.Value, new Vector2(Width, Height))
                     .ScaledBy(ScaleFactor),
                 old.score));
 
         boundingBoxManager.SetObjectClassifications(classifications);
+    }
+
+    private static Rotation? RotationForScreenOrientation()
+    {
+        switch (Screen.orientation)
+        {
+            case ScreenOrientation.Portrait: return Rotation.Left;
+            case ScreenOrientation.LandscapeRight: return Rotation.Up;
+            case ScreenOrientation.PortraitUpsideDown: return Rotation.Right;
+            case ScreenOrientation.LandscapeLeft: return Rotation.HalfCircle;
+        }
+
+        return null;
     }
 
     private byte[] ConvertBufferToJpg(NativeArray<byte> buffer, XRCameraImageConversionParams conversionParams)
