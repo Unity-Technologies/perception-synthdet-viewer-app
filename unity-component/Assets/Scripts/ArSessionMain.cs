@@ -11,6 +11,7 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
 [RequireComponent(typeof(CaptureExportManager))]
+[RequireComponent(typeof(OrientationObserver))]
 public class ArSessionMain : MonoBehaviour
 {
     private const float Width = 1280;
@@ -20,6 +21,7 @@ public class ArSessionMain : MonoBehaviour
     private const float UpdatesPerSecond = 5;
 
     private CaptureExportManager _captureExportManager;
+    private OrientationObserver _orientationObserver;
     
     public ARSession arSession;
     public ARCameraManager cameraManager;
@@ -34,6 +36,7 @@ public class ArSessionMain : MonoBehaviour
     private void Awake()
     {
         _captureExportManager = GetComponent<CaptureExportManager>();
+        _orientationObserver = GetComponent<OrientationObserver>();
     }
 
     private IEnumerator Start() {
@@ -167,11 +170,11 @@ public class ArSessionMain : MonoBehaviour
             yield break;
         }
         webRequest.downloadHandler.Dispose();
-
+        
         var rotation = RotationForScreenOrientation();
         if (!rotation.HasValue)
         {
-            Debug.LogErrorFormat("Invalid screen orientation: {0}", Screen.orientation);
+            Debug.LogErrorFormat("Invalid screen orientation: {0}", _orientationObserver.ScreenOrientation);
             yield break;
         }
 
@@ -189,14 +192,14 @@ public class ArSessionMain : MonoBehaviour
         boundingBoxManager.SetObjectClassifications(classifications);
     }
 
-    private static Rotation? RotationForScreenOrientation()
+    private Rotation? RotationForScreenOrientation()
     {
-        switch (Screen.orientation)
+        switch (_orientationObserver.ScreenOrientation)
         {
-            case ScreenOrientation.Portrait: return Rotation.Left;
-            case ScreenOrientation.LandscapeRight: return Rotation.Up;
-            case ScreenOrientation.PortraitUpsideDown: return Rotation.Right;
-            case ScreenOrientation.LandscapeLeft: return Rotation.HalfCircle;
+            case Orientation.Portrait: return Rotation.Left;
+            case Orientation.LandscapeRight: return Rotation.Up;
+            case Orientation.PortraitUpsideDown: return Rotation.Right;
+            case Orientation.LandscapeLeft: return Rotation.HalfCircle;
         }
 
         return null;

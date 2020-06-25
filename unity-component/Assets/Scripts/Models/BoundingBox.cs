@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Models
 {
-    [System.Serializable]
+    [Serializable]
     public class BoundingBox
     {
         // ReSharper disable once InconsistentNaming
@@ -54,6 +54,8 @@ namespace Models
                 case Rotation.HalfCircle:
                     return new BoundingBox(new Point2D(width - bottom_right.x, height - bottom_right.y), 
                         new Point2D(x: width - top_left.x, y: height - top_left.y));
+                case Rotation.Up:
+                    return this;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(rotation), rotation, null);
             }
@@ -66,7 +68,7 @@ namespace Models
         }
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Point2D
     {
         public float x;

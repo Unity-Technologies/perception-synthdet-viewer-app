@@ -91,7 +91,7 @@ namespace Components
 
                 if (boundingBoxGameObject != null)
                 {
-                    Console.WriteLine("Re-using bounding box at center: " + hitPosition);
+                    // Console.WriteLine("Re-using bounding box at center: " + hitPosition);
                 
                     var boundingBox = boundingBoxGameObject.GetComponent<LabeledBoundingBox>();
 
@@ -100,7 +100,7 @@ namespace Components
                 }
                 else
                 {
-                    Console.WriteLine("Added bounding box at center: " + hitPosition);
+                    // Console.WriteLine("Added bounding box at center: " + hitPosition);
 
                     _boundingBoxes.Add(GetNewBoundingBoxForClassification(objectClassification, hitPosition, distancePerPixel));
                 }
@@ -110,7 +110,7 @@ namespace Components
                 var boundingBoxWithLabel = FindCloseBoundingBoxForObject(objectClassification, null);
                 if (boundingBoxWithLabel != null)
                 {
-                    Console.WriteLine("Re-using bounding box at old center: " + boundingBoxWithLabel.transform.position);
+                    // Console.WriteLine("Re-using bounding box at old center: " + boundingBoxWithLabel.transform.position);
                 
                     var boundingBox = boundingBoxWithLabel.GetComponent<LabeledBoundingBox>();
 

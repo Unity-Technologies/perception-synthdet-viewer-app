@@ -87,6 +87,20 @@ class ViewController: UIViewController {
         UnityEmbeddedSwift.instance?.delegate = self
     }
     
+//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//        super.viewWillTransition(to: size, with: coordinator)
+//
+//        print("Swift \(windowInterfaceOrientation?.rawValue)")
+//    }
+//
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        print("Swift \(String(describing: windowInterfaceOrientation))")
+//    }
+//
+//    private var windowInterfaceOrientation: UIInterfaceOrientation? {
+//        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation
+//    }
+    
     private func setupNavigationBar() {
         navigationItem.title = "Unity SynthDet"
         

@@ -9,6 +9,7 @@
 import UIKit
 
 class UnityView: UIView {
+    
     private var unityView: UIView?
     
     init() {
