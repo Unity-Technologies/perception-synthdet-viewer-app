@@ -24,7 +24,7 @@ namespace Components
         private const int SurroundingPixelDistance = 10; // Amount of pixels to go out in each direction when finding distance per pixel
         private const float LabeledBoundingBoxScale = 0.1f; // Scale of LabeledBoundingBox prefab
         private const float RectangleScale = 0.1f; // Scale of rectangle on LabeledBoundingBox prefab
-        private const int TransientBoxUpdateCount = 0; // Amount of updates a box can go through without being reused
+        private const int TransientBoxUpdateCount = 1; // Amount of updates a box can go through without being reused
 
         private void Awake()
         {
