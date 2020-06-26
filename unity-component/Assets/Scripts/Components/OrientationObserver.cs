@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.iOS;
 
 namespace Components
 {
@@ -33,7 +31,7 @@ namespace Components
                 case DeviceOrientation.LandscapeRight: 
                     ScreenOrientation = Orientation.LandscapeRight;
                     break;
-                case DeviceOrientation.Unknown: case DeviceOrientation.FaceUp: case DeviceOrientation.FaceDown: 
+                default: 
                     if (ScreenOrientation == Orientation.Unknown)
                     {
                         ScreenOrientation = OrientationForScreenOrientation(Screen.orientation);

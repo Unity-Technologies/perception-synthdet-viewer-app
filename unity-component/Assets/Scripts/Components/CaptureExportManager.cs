@@ -39,10 +39,8 @@ namespace Components
             _originalImagesPath = Path.Combine(_storagePath, OriginalImagesFolderName);
             _cocoDocumentPath = Path.Combine(_originalImagesPath, CocoDocumentFileName);
             
-            Directory.CreateDirectory(_storagePath);
-            Directory.CreateDirectory(_labeledImagesPath);
-            Directory.CreateDirectory(_originalImagesPath);
-
+            CreateDirectories();
+            
             _cocoDocument = JsonUtility.FromJson<CocoDocument>(File.ReadAllText(_cocoDocumentPath)) ?? new CocoDocument();
 
             // Update info, licenses, categories in annotations.json every time the app starts
@@ -97,6 +95,9 @@ namespace Components
                 return;
             }
             
+            // Create needed directories if they don't exist yet
+            CreateDirectories();
+            
             Debug.Log("Saving capture of current bounding boxes");
 
             if (format == CaptureExportFormat.LabeledImage || format == CaptureExportFormat.Both)
@@ -108,6 +109,31 @@ namespace Components
             {
                 SaveOriginalImage(originalImageBytes, originalImageSize, classifications);
             }
+        }
+        
+        // Can be called from native platforms to delete all captures in Captures folder
+        // ReSharper disable once UnusedMember.Global
+        public void DeleteAllCaptures()
+        {
+            Directory.Delete(_storagePath, true); // Delete _storagePath and recursive subdirectories
+            
+            // Create empty directories and start new coco annotations file
+            CreateDirectories();
+            InitCocoDocument();
+        }
+
+        private void CreateDirectories()
+        {
+            Directory.CreateDirectory(_storagePath);
+            Directory.CreateDirectory(_labeledImagesPath);
+            Directory.CreateDirectory(_originalImagesPath);
+        }
+
+        private void InitCocoDocument()
+        {
+            _cocoDocument = CocoDocument.CreateEmptyDocument();
+            
+            File.WriteAllText(_cocoDocumentPath, JsonUtility.ToJson(_cocoDocument));
         }
 
         private void SaveLabeledImage(byte[] labeledImageBytes)

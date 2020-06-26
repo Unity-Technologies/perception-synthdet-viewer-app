@@ -14,8 +14,7 @@ class SettingsViewController: UITableViewController {
         
         static let thresholdCell = "ThresholdCell"
         static let modelCell = "ModelCell"
-        static let addModelCell = "AddModelCell"
-        static let shareCapturesCell = "ShareCapturesCell"
+        static let buttonCell = "ButtonCell"
         
     }
     
@@ -32,8 +31,7 @@ class SettingsViewController: UITableViewController {
         
         tableView.register(ThresholdCell.self, forCellReuseIdentifier: Keys.thresholdCell)
         tableView.register(ModelCell.self, forCellReuseIdentifier: Keys.modelCell)
-        tableView.register(AddModelCell.self, forCellReuseIdentifier: Keys.addModelCell)
-        tableView.register(ShareCapturesCell.self, forCellReuseIdentifier: Keys.shareCapturesCell)
+        tableView.register(ButtonCell.self, forCellReuseIdentifier: Keys.buttonCell)
         
         tableView.allowsSelection = false
     }
@@ -114,10 +112,20 @@ class SettingsViewController: UITableViewController {
         tableView.endUpdates()
     }
     
-    private var documentsDirectory: URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        return documentsDirectory
+    private func onDeleteCapturesButtonTapped() {
+        let alert = UIAlertController(title: "Delete All Captures",
+                                      message: "Are you sure you want to delete all captures?", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { action in
+            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main", method: "DeleteAllCaptures")
+        }))
+        
+        present(alert, animated: true)
+    }
+    
+    private var capturesDirectory: URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Captures")
     }
     
 }
@@ -126,7 +134,7 @@ class SettingsViewController: UITableViewController {
 extension SettingsViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -134,6 +142,7 @@ extension SettingsViewController {
         case 0: return 1
         case 1: return (settingsModel?.modelEndpoints.count ?? 0) + (tableView.isEditing ? 1 : 0)
         case 2: return 1
+        case 3: return 1
         default: return 0
         }
     }
@@ -143,6 +152,7 @@ extension SettingsViewController {
         case 0: return "Prediction Score Threshold"
         case 1: return "Model Endpoints"
         case 2: return "Capture Export Settings"
+        case 3: return "Delete All Captures"
         default: return nil
         }
     }
@@ -159,8 +169,11 @@ extension SettingsViewController {
             return cell
         } else if indexPath.section == 1 {
             if let models = settingsModel?.modelEndpoints, indexPath.row == models.count {
-                let cell = tableView.dequeueReusableCell(withIdentifier: Keys.addModelCell, for: indexPath)
-                (cell as? AddModelCell)?.addButtonTappedHandler = onAddModelButtonTapped
+                let cell = tableView.dequeueReusableCell(withIdentifier: Keys.buttonCell, for: indexPath)
+                
+                (cell as? ButtonCell)?.buttonTitle = "Add Model Endpoint"
+                (cell as? ButtonCell)?.buttonTitleColor = .systemBlue
+                (cell as? ButtonCell)?.buttonTappedHandler = onAddModelButtonTapped
                 
                 return cell
             } else {
@@ -175,16 +188,28 @@ extension SettingsViewController {
                 return cell
             }
         } else if indexPath.section == 2 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: Keys.shareCapturesCell, for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: Keys.buttonCell, for: indexPath)
             
-            (cell as? ShareCapturesCell)?.shareButtonTappedHandler = {
-                let folderUrl = self.documentsDirectory.appendingPathComponent("Captures")
+            (cell as? ButtonCell)?.buttonTitle = "Share Captures"
+            (cell as? ButtonCell)?.buttonTitleColor = .systemBlue
+            (cell as? ButtonCell)?.buttonTappedHandler = {
+                guard FileManager.default.fileExists(atPath: self.capturesDirectory.path) else { return }
                 
-                let activityViewController = UIActivityViewController(activityItems: [folderUrl], applicationActivities: nil)
+                let activityViewController = UIActivityViewController(activityItems: [self.capturesDirectory],
+                                                                      applicationActivities: nil)
                 activityViewController.popoverPresentationController?.sourceView = cell.contentView
+                
                 self.present(activityViewController, animated: true)
             }
             
+            return cell
+        } else if indexPath.section == 3 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: Keys.buttonCell, for: indexPath)
+
+            (cell as? ButtonCell)?.buttonTitle = "Delete All Captures"
+            (cell as? ButtonCell)?.buttonTitleColor = .systemRed
+            (cell as? ButtonCell)?.buttonTappedHandler = onDeleteCapturesButtonTapped
+
             return cell
         } else {
             fatalError("Bad index path")
