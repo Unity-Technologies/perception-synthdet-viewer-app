@@ -34,6 +34,8 @@ class SettingsViewController: UITableViewController {
         tableView.register(ButtonCell.self, forCellReuseIdentifier: Keys.buttonCell)
         
         tableView.allowsSelection = false
+        tableView.allowsSelectionDuringEditing = false
+        
     }
     
     required init?(coder: NSCoder) {

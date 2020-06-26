@@ -9,25 +9,11 @@
 import UIKit
 
 class ModelCell: UITableViewCell {
-    
-    private let namePlaceholderLabel: UILabel = {
-        let label = UILabel()
-        
-        label.text = "Name"
-        label.textColor = .systemGray
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
 
-    private let nameTextView: UITextView = {
-        let textView = UITextView()
+    private let nameTextView: UITextField = {
+        let textView = UITextField()
         
-        textView.textContainer.maximumNumberOfLines = 1
-        textView.textContainer.lineBreakMode = .byTruncatingHead
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
+        textView.placeholder = "Name"
         
         textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -46,27 +32,13 @@ class ModelCell: UITableViewCell {
         
         return view
     }()
-    
-    private let urlPlaceholderLabel: UILabel = {
-        let label = UILabel()
-        
-        label.text = "URL"
-        label.textColor = .systemGray
-        label.font = UIFont.preferredFont(forTextStyle: .body)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        return label
-    }()
 
     
-    private let urlTextView: UITextView = {
-        let textView = UITextView()
-        
-        textView.textContainer.maximumNumberOfLines = 1
-        textView.textContainer.lineBreakMode = .byTruncatingHead
-        textView.font = UIFont.preferredFont(forTextStyle: .body)
+    private let urlTextView: UITextField = {
+        let textView = UITextField()
+
         textView.autocorrectionType = .no
+        textView.placeholder = "URL"
         
         textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -78,9 +50,6 @@ class ModelCell: UITableViewCell {
         didSet {
             nameTextView.text = modelEndpoint?.name
             urlTextView.text = modelEndpoint?.url
-            
-            namePlaceholderLabel.text = modelEndpoint?.name == nil ? "Name" : " "
-            urlPlaceholderLabel.text = modelEndpoint?.url == nil ? "URL" : " "
         }
     }
     
@@ -94,10 +63,8 @@ class ModelCell: UITableViewCell {
         nameTextView.delegate = self
         urlTextView.delegate = self
         
-        contentView.addSubview(namePlaceholderLabel)
         contentView.addSubview(nameTextView)
         contentView.addSubview(separatorView)
-        contentView.addSubview(urlPlaceholderLabel)
         contentView.addSubview(urlTextView)
         
         separatorView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
@@ -105,21 +72,15 @@ class ModelCell: UITableViewCell {
         separatorView.widthAnchor.constraint(equalToConstant: 0.5).isActive = true
         separatorView.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
         
-        namePlaceholderLabel.leftAnchor.constraint(equalTo: nameTextView.leftAnchor, constant: 4.75).isActive = true
-        namePlaceholderLabel.centerYAnchor.constraint(equalTo: nameTextView.centerYAnchor, constant: -0.5).isActive = true
-        
         nameTextView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 15).isActive = true
         nameTextView.rightAnchor.constraint(equalTo: separatorView.leftAnchor, constant: -15).isActive = true
         nameTextView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        nameTextView.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
-        
-        urlPlaceholderLabel.leftAnchor.constraint(equalTo: urlTextView.leftAnchor, constant: 4.75).isActive = true
-        urlPlaceholderLabel.centerYAnchor.constraint(equalTo: urlTextView.centerYAnchor, constant: -0.5).isActive = true
+        nameTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         
         urlTextView.leftAnchor.constraint(equalTo: separatorView.rightAnchor, constant: 15).isActive = true
         urlTextView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -15).isActive = true
         urlTextView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        urlTextView.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
+        urlTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
     }
     
     required init?(coder: NSCoder) {
@@ -129,8 +90,13 @@ class ModelCell: UITableViewCell {
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         
-        nameTextView.isEditable = editing
-        urlTextView.isEditable = editing
+        nameTextView.isUserInteractionEnabled = editing
+        urlTextView.isUserInteractionEnabled = editing
+        
+        if !editing {
+            nameTextView.endEditing(true)
+            urlTextView.endEditing(true)
+        }
     }
     
     override func layoutSubviews() {
@@ -140,21 +106,16 @@ class ModelCell: UITableViewCell {
         contentView.layoutIfNeeded()
         
         separatorView.layer.sublayers?[0].frame = separatorView.bounds
-        
-        nameTextView.centerVertically()
-        urlTextView.centerVertically()
     }
-
+    
 }
 
-extension ModelCell: UITextViewDelegate {
+extension ModelCell: UITextFieldDelegate {
     
-    func textViewDidChange(_ textView: UITextView) {
+    func textFieldDidChange(_ textView: UITextView) {
         if textView == nameTextView {
-            namePlaceholderLabel.text = textView.text.isEmpty ? "Name" : " "
             modelEndpoint?.name = textView.text
         } else if textView == urlTextView {
-            urlPlaceholderLabel.text = textView.text.isEmpty ? "URL" : " "
             modelEndpoint?.url = textView.text
         }
         
@@ -167,16 +128,4 @@ protocol ModelCellDelegate: NSObject {
     
     func modelCell(_ modelCell: ModelCell, didChangeModel modelEndpoint: ModelEndpoint?)
     
-}
-
-extension UITextView {
-
-    func centerVertically() {
-        let fittingSize = CGSize(width: bounds.width, height: CGFloat.greatestFiniteMagnitude)
-        let size = sizeThatFits(fittingSize)
-        let topOffset = (bounds.size.height - size.height * zoomScale) / 2
-        let positiveTopOffset = max(1, topOffset)
-        contentOffset.y = -positiveTopOffset
-    }
-
 }
