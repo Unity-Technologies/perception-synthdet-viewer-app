@@ -19,6 +19,7 @@ public class ArSessionMain : MonoBehaviour
     private static float ScaleFactor => Math.Max(Screen.width, Screen.height) / Width;
 
     private const float UpdatesPerSecond = 5;
+    private const float MaximumActiveRequests = 5;
 
     private CaptureExportManager _captureExportManager;
     private OrientationObserver _orientationObserver;
@@ -32,6 +33,8 @@ public class ArSessionMain : MonoBehaviour
 
     private List<ObjectClassification> _currentClassifications;
     private byte[] _currentJpgBytes;
+
+    private int _activeRequests;
 
     private void Awake()
     {
@@ -75,6 +78,12 @@ public class ArSessionMain : MonoBehaviour
             return;
         }
         _lastTime = Time.fixedTime;
+
+        Console.WriteLine(_activeRequests);
+        if (_activeRequests >= MaximumActiveRequests)
+        {
+            return;
+        }
         
         var urlString = settingsManager.SettingsModel.activeEndpoint?.url;
         if (!Uri.IsWellFormedUriString(urlString, UriKind.Absolute))
@@ -123,73 +132,96 @@ public class ArSessionMain : MonoBehaviour
 
     private IEnumerator ProcessImage(XRCameraImage image)
     {
-        var request = image.ConvertAsync(new XRCameraImageConversionParams
+        using (var request = image.ConvertAsync(new XRCameraImageConversionParams
         {
             inputRect = new RectInt(0, 0, image.width, image.height),
             outputDimensions = new Vector2Int((int) Width, (int) Height),
             outputFormat = TextureFormat.RGBA32,
             transformation = CameraImageTransformation.MirrorY
-        });
-
-        while (!request.status.IsDone())
+        }))
         {
-            yield return null;
-        }
+            image.Dispose();
+            
+            while (!request.status.IsDone())
+            {
+                yield return null;
+            }
 
-        if (request.status != AsyncCameraImageConversionStatus.Ready)
-        {
-            Debug.LogErrorFormat("Image request failed with status {0}", request.status);
+            if (request.status != AsyncCameraImageConversionStatus.Ready)
+            {
+                Debug.LogErrorFormat("Image request failed with status {0}", request.status);
+            
+                request.Dispose();
+                yield break;
+            }
+        
+            _currentJpgBytes = ConvertBufferToJpg(request.GetData<byte>(), request.conversionParams);
             
             request.Dispose();
-            yield break;
         }
 
-        var imageData = request.GetData<byte>();
-         _currentJpgBytes = ConvertBufferToJpg(imageData, request.conversionParams);
-        imageData.Dispose();
-        request.Dispose();
-        
-        var webRequest = GetRequestForImage(_currentJpgBytes, settingsManager.SettingsModel.activeEndpoint?.url);
-        yield return webRequest.SendWebRequest();
-
-        if (webRequest.isNetworkError)
+        using (var webRequest = GetRequestForImage(_currentJpgBytes, settingsManager.SettingsModel.activeEndpoint?.url))
         {
-            Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
-            yield break;
-        }
+            _activeRequests += 1;
+            webRequest.SendWebRequest();
 
-        webRequest.uploadHandler.Dispose();
-        var text = "{\"objects\":" + webRequest.downloadHandler.text + "}";
+            var startTime = Time.realtimeSinceStartup;
+            Console.WriteLine("START TIME: " + startTime);
+            
+            while (!webRequest.isDone)
+            {
+                if (Time.realtimeSinceStartup > startTime + 2)
+                {
+                    webRequest.Abort();
+                    break;
+                }
+                
+                yield return null;
+            }
+            
+            _activeRequests -= 1;
 
-        // If JSON output does not have an array, the response was not a 200 OK
-        // I wish JsonUtility had error handling
-        if (!text.Contains("["))
-        {
-            Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
-            webRequest.downloadHandler.Dispose();
-            yield break;
-        }
-        webRequest.downloadHandler.Dispose();
+            if (webRequest.isNetworkError)
+            {
+                Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
+                webRequest.Dispose();
+                yield break;
+            }
+
+            var text = "{\"objects\":" + webRequest.downloadHandler.text + "}";
+
+            // If JSON output does not have an array, the response was not a 200 OK
+            // I wish JsonUtility had error handling
+            if (!text.Contains("[") || webRequest.isHttpError)
+            {
+                Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
+                webRequest.Dispose();
+                yield break;
+            }
         
-        var rotation = RotationForScreenOrientation();
-        if (!rotation.HasValue)
-        {
-            Debug.LogErrorFormat("Invalid screen orientation: {0}", _orientationObserver.ScreenOrientation);
-            yield break;
-        }
+            var rotation = RotationForScreenOrientation();
+            if (!rotation.HasValue)
+            {
+                Debug.LogErrorFormat("Invalid screen orientation: {0}", _orientationObserver.ScreenOrientation);
+                webRequest.Dispose();
+                yield break;
+            }
+            
+            webRequest.Dispose();
 
-        _currentClassifications = JsonUtility.FromJson<JsonWrapper>(text).objects
-            .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold);
+            _currentClassifications = JsonUtility.FromJson<JsonWrapper>(text).objects
+                .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold);
         
-        var classifications = _currentClassifications
-            .ConvertAll(old => new ObjectClassification(old.label,
-                old.label_id,
-                old.box
-                    .RotatedBy(rotation.Value, new Vector2(Width, Height))
-                    .ScaledBy(ScaleFactor),
-                old.score));
+            var classifications = _currentClassifications
+                .ConvertAll(old => new ObjectClassification(old.label,
+                    old.label_id,
+                    old.box
+                        .RotatedBy(rotation.Value, new Vector2(Width, Height))
+                        .ScaledBy(ScaleFactor),
+                    old.score));
 
-        boundingBoxManager.SetObjectClassifications(classifications);
+            boundingBoxManager.SetObjectClassifications(classifications);
+        }
     }
 
     private Rotation? RotationForScreenOrientation()
@@ -223,12 +255,12 @@ public class ArSessionMain : MonoBehaviour
     private UnityWebRequest GetRequestForImage(byte[] jpgData, string modelUrl)
     {
         var request = new UnityWebRequest(modelUrl, UnityWebRequest.kHttpVerbPOST);
-        var downloadHandler = new DownloadHandlerBuffer();
         
         request.certificateHandler = new CertificateBypassHandler();
         request.uploadHandler = new UploadHandlerRaw(jpgData);
         request.SetRequestHeader("Content-Type", "image/jpg");
-        request.downloadHandler = downloadHandler;
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.timeout = 2;
 
         return request;
     }

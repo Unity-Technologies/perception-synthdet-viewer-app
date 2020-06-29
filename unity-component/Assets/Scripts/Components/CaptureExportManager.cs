@@ -40,8 +40,15 @@ namespace Components
             _cocoDocumentPath = Path.Combine(_originalImagesPath, CocoDocumentFileName);
             
             CreateDirectories();
-            
-            _cocoDocument = JsonUtility.FromJson<CocoDocument>(File.ReadAllText(_cocoDocumentPath)) ?? new CocoDocument();
+
+            if (File.Exists(_cocoDocumentPath))
+            {
+                _cocoDocument = JsonUtility.FromJson<CocoDocument>(File.ReadAllText(_cocoDocumentPath));
+            }
+            else
+            {
+                _cocoDocument = new CocoDocument();
+            }
 
             // Update info, licenses, categories in annotations.json every time the app starts
             var emptyCocoDoc = CocoDocument.CreateEmptyDocument();
@@ -161,6 +168,10 @@ namespace Components
 
         private void SaveOriginalImage(byte[] originalImageBytes, Vector2Int imageSize, List<ObjectClassification> classifications)
         {
+            Console.WriteLine("COCO DOC: " + _cocoDocument);
+            Console.WriteLine("COCO IMAGES: " + _cocoDocument.images);
+            Console.WriteLine("COCO INFO: " + _cocoDocument.info);
+            
             var imageId = _cocoDocument.images
                 .ConvertAll(image => image.id)
                 .DefaultIfEmpty(-1)

@@ -60,8 +60,8 @@ class ModelCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        nameTextView.delegate = self
-        urlTextView.delegate = self
+        nameTextView.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        urlTextView.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
         contentView.addSubview(nameTextView)
         contentView.addSubview(separatorView)
@@ -108,15 +108,11 @@ class ModelCell: UITableViewCell {
         separatorView.layer.sublayers?[0].frame = separatorView.bounds
     }
     
-}
-
-extension ModelCell: UITextFieldDelegate {
-    
-    func textFieldDidChange(_ textView: UITextView) {
-        if textView == nameTextView {
-            modelEndpoint?.name = textView.text
-        } else if textView == urlTextView {
-            modelEndpoint?.url = textView.text
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        if textField == nameTextView {
+            modelEndpoint?.name = textField.text
+        } else if textField == urlTextView {
+            modelEndpoint?.url = textField.text
         }
         
         delegate?.modelCell(self, didChangeModel: modelEndpoint)

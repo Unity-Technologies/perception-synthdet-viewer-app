@@ -551,7 +551,7 @@
 				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = 39LL6Q9676;
 				INFOPLIST_FILE = "native-app/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -576,7 +576,7 @@
 				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = 39LL6Q9676;
 				INFOPLIST_FILE = "native-app/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
