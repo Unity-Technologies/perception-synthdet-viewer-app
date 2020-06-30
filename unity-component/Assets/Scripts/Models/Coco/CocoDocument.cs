@@ -19,7 +19,7 @@ namespace Models.Coco
             {
                 info = new CocoInfo(DateTime.Now.Year.ToString(),
                     "1.0",
-                    "COCO Export of Captures from Unity SynthDet Demo iPad App",
+                    "COCO Export of Captures from Unity Object Detection App",
                     "Unity Technologies, Inc.",
                     "",
                     DateTime.Now.ToString(CultureInfo.InvariantCulture)),

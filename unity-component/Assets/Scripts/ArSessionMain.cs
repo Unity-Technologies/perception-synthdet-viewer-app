@@ -73,13 +73,12 @@ public class ArSessionMain : MonoBehaviour
 
     private void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs)
     {
-        if (1 / (Time.fixedTime - _lastTime) > UpdatesPerSecond)
+        if (1 / (Time.realtimeSinceStartup - _lastTime) > UpdatesPerSecond)
         {
             return;
         }
-        _lastTime = Time.fixedTime;
-
-        Console.WriteLine(_activeRequests);
+        _lastTime = Time.realtimeSinceStartup;
+        
         if (_activeRequests >= MaximumActiveRequests)
         {
             return;
@@ -140,8 +139,6 @@ public class ArSessionMain : MonoBehaviour
             transformation = CameraImageTransformation.MirrorY
         }))
         {
-            image.Dispose();
-            
             while (!request.status.IsDone())
             {
                 yield return null;
@@ -150,14 +147,10 @@ public class ArSessionMain : MonoBehaviour
             if (request.status != AsyncCameraImageConversionStatus.Ready)
             {
                 Debug.LogErrorFormat("Image request failed with status {0}", request.status);
-            
-                request.Dispose();
                 yield break;
             }
         
             _currentJpgBytes = ConvertBufferToJpg(request.GetData<byte>(), request.conversionParams);
-            
-            request.Dispose();
         }
 
         using (var webRequest = GetRequestForImage(_currentJpgBytes, settingsManager.SettingsModel.activeEndpoint?.url))
@@ -189,10 +182,10 @@ public class ArSessionMain : MonoBehaviour
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
                 Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
-                webRequest.Dispose();
                 yield break;
             }
-
+            
+            // Wrap output in top-level object for JsonUtility
             var text = "{\"objects\":" + webRequest.downloadHandler.text + "}";
 
             // If JSON output does not have an array, the response was not a 200 OK
@@ -200,12 +193,9 @@ public class ArSessionMain : MonoBehaviour
             if (!text.Contains("["))
             {
                 Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
-                webRequest.Dispose();
                 yield break;
             }
             
-            webRequest.Dispose();
-        
             var rotation = RotationForScreenOrientation();
             if (!rotation.HasValue)
             {
@@ -264,7 +254,7 @@ public class ArSessionMain : MonoBehaviour
         request.uploadHandler = new UploadHandlerRaw(jpgData);
         request.SetRequestHeader("Content-Type", "image/jpg");
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.timeout = 2;
+        request.timeout = 2; // Seconds
 
         return request;
     }
