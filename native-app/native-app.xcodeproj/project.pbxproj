@@ -16,6 +16,7 @@
 		3217D43D248ADCDD005A1B58 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D43C248ADCDD005A1B58 /* Logging.swift */; };
 		3217D446248EE90D005A1B58 /* ObjectClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D445248EE90D005A1B58 /* ObjectClassification.swift */; };
 		3217D448248EE937005A1B58 /* BoundingBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D447248EE937005A1B58 /* BoundingBox.swift */; };
+		322B32EB24ABCF27008883DF /* Dialogs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322B32EA24ABCF27008883DF /* Dialogs.swift */; };
 		3286CB0A2498093D00F24461 /* ButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB092498093D00F24461 /* ButtonCell.swift */; };
 		3286CB0E24980E1600F24461 /* ModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB0D24980E1600F24461 /* ModelCell.swift */; };
 		3286CB1024981B3000F24461 /* ModelEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3286CB0F24981B3000F24461 /* ModelEndpoint.swift */; };
@@ -68,6 +69,7 @@
 		3217D43F248B245F005A1B58 /* native-app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "native-app-Bridging-Header.h"; sourceTree = "<group>"; };
 		3217D445248EE90D005A1B58 /* ObjectClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectClassification.swift; sourceTree = "<group>"; };
 		3217D447248EE937005A1B58 /* BoundingBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundingBox.swift; sourceTree = "<group>"; };
+		322B32EA24ABCF27008883DF /* Dialogs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dialogs.swift; sourceTree = "<group>"; };
 		3286CB092498093D00F24461 /* ButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCell.swift; sourceTree = "<group>"; };
 		3286CB0D24980E1600F24461 /* ModelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelCell.swift; sourceTree = "<group>"; };
 		3286CB0F24981B3000F24461 /* ModelEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelEndpoint.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 			children = (
 				3286CB142499415700F24461 /* ActionListViewController.swift */,
 				3286CB16249BC89800F24461 /* ShutterButton.swift */,
+				322B32EA24ABCF27008883DF /* Dialogs.swift */,
 			);
 			path = "Accessory Components";
 			sourceTree = "<group>";
@@ -356,6 +359,7 @@
 				320A07C7249413E700B93CB5 /* UserDefaultsKeys.swift in Sources */,
 				3217D446248EE90D005A1B58 /* ObjectClassification.swift in Sources */,
 				3286CB17249BC89800F24461 /* ShutterButton.swift in Sources */,
+				322B32EB24ABCF27008883DF /* Dialogs.swift in Sources */,
 				3286CB0E24980E1600F24461 /* ModelCell.swift in Sources */,
 				32883A2B24881133005D0FE1 /* SceneDelegate.swift in Sources */,
 				32EC7BCC248ABB9000AA2BE5 /* UnityEmbeddedSwift.swift in Sources */,
@@ -556,7 +560,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.unity3d.synthdet-demo-app.native-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
 				PRODUCT_NAME = "Unity SynthDet";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";
@@ -581,7 +585,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.unity3d.synthdet-demo-app.native-app";
+				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
 				PRODUCT_NAME = "Unity SynthDet";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";

@@ -166,14 +166,17 @@ public class ArSessionMain : MonoBehaviour
             webRequest.SendWebRequest();
 
             var startTime = Time.realtimeSinceStartup;
+            var forceStopped = false;
+            
             Console.WriteLine("START TIME: " + startTime);
             
-            while (!webRequest.isDone)
+            while (!webRequest.isDone && !forceStopped)
             {
-                if (Time.realtimeSinceStartup > startTime + 2)
+                if (Time.realtimeSinceStartup > startTime + 3)
                 {
+                    Console.WriteLine("Force stopped request");
                     webRequest.Abort();
-                    break;
+                    forceStopped = true;
                 }
                 
                 yield return null;
@@ -181,7 +184,9 @@ public class ArSessionMain : MonoBehaviour
             
             _activeRequests -= 1;
 
-            if (webRequest.isNetworkError)
+            Console.WriteLine(webRequest.error);
+            
+            if (webRequest.isNetworkError || webRequest.isHttpError)
             {
                 Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
                 webRequest.Dispose();
@@ -192,22 +197,21 @@ public class ArSessionMain : MonoBehaviour
 
             // If JSON output does not have an array, the response was not a 200 OK
             // I wish JsonUtility had error handling
-            if (!text.Contains("[") || webRequest.isHttpError)
+            if (!text.Contains("["))
             {
                 Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
                 webRequest.Dispose();
                 yield break;
             }
+            
+            webRequest.Dispose();
         
             var rotation = RotationForScreenOrientation();
             if (!rotation.HasValue)
             {
                 Debug.LogErrorFormat("Invalid screen orientation: {0}", _orientationObserver.ScreenOrientation);
-                webRequest.Dispose();
                 yield break;
             }
-            
-            webRequest.Dispose();
 
             _currentClassifications = JsonUtility.FromJson<JsonWrapper>(text).objects
                 .FindAll(it => it.score >= settingsManager.SettingsModel.predictionScoreThreshold);

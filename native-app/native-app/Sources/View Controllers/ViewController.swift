@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 class ViewController: UIViewController {
     
@@ -54,6 +55,8 @@ class ViewController: UIViewController {
             if let filteredModels = filteredModels, let model = settings?.activeEndpoint,
                 !filteredModels.contains(model) {
                 settings?.activeEndpoint = filteredModels.first
+                
+                changeActiveEndpoint()
             }
             
             if let endpoint = settings?.activeEndpoint, endpoint.isValid {
@@ -85,6 +88,14 @@ class ViewController: UIViewController {
         setupShutterButton()
         
         UnityEmbeddedSwift.instance?.delegate = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if AVCaptureDevice.authorizationStatus(for: .video) == .denied {
+            present(Dialogs.noCameraAccess, animated: true)
+        }
     }
     
     private func setupNavigationBar() {
@@ -140,6 +151,27 @@ class ViewController: UIViewController {
         shutterButton.addTarget(self, action: #selector(onShutterButtonTapped), for: .touchUpInside)
     }
     
+    private func changeActiveEndpoint() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(self.settings?.activeEndpoint),
+            let json = String(bytes: encoded, encoding: .utf8) {
+            UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings",
+                                                                      method: "SetActiveEndpointFromJson",
+                                                                      message: json)
+        }
+    }
+    
+    private func testInternetConnection() {
+        DispatchQueue.global().async {
+            let test = try? String(contentsOf: URL(string: "https://unity3d.com")!, encoding: .utf8)
+            if test == nil {
+                DispatchQueue.main.async {
+                    self.present(Dialogs.noInternetAccess, animated: true)
+                }
+            }
+        }
+    }
+    
     @objc private func onSettingsTapped(_ sender: UIBarButtonItem) {
         let settingsNavVc = UINavigationController(rootViewController: settingsViewController)
         settingsNavVc.modalPresentationStyle = .pageSheet
@@ -148,19 +180,19 @@ class ViewController: UIViewController {
     
     @objc private func onChooseModelTapped(_ sender: UIButton) {
         guard let filteredModels = filteredModels, filteredModels.count > 0,
-            let names = namesForFilteredModels else { return }
+            let names = namesForFilteredModels else {
+                
+            present(Dialogs.noModelEndpoints, animated: true)
+            return
+        }
         
         let modelChooser = ActionListViewController(items: names)
         modelChooser.actionSelectedHandler = { index in
             self.settings?.activeEndpoint = filteredModels[index]
             
-            let encoder = JSONEncoder()
-            if let encoded = try? encoder.encode(self.settings?.activeEndpoint),
-                let json = String(bytes: encoded, encoding: .utf8) {
-                UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings",
-                                                                          method: "SetActiveEndpointFromJson",
-                                                                          message: json)
-            }
+            self.changeActiveEndpoint()
+            
+            self.testInternetConnection()
         }
         modelChooser.selectedIndex = filteredModels.firstIndex(where: { $0 == settings?.activeEndpoint })
         modelChooser.modalPresentationStyle = .popover

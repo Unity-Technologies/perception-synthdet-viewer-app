@@ -54,10 +54,6 @@ class ShutterButton: UIButton {
         addTarget(self, action: #selector(onButtonReleasedInside), for: .touchUpInside)
         addTarget(self, action: #selector(onButtonReleasedOutside), for: .touchUpOutside)
         
-//        if let sublayers = layer.sublayers, sublayers.count > 0 {
-//            layer.sublayers?.remove(at: 0)
-//        }
-        
         innerCircle.layer.cornerRadius = innerCircle.bounds.width / 2
         
         drawOuterRing()
@@ -87,27 +83,21 @@ class ShutterButton: UIButton {
     }
     
     @objc private func onButtonPressedDown(_ sender: UIButton) {
-//        UIView.animate(withDuration: 0.5) {
-            self.innerCircleWidth.constant = -25
-            self.innerCircleHeight.constant = -25
-            self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width - 2.5) / 2
-//        }
+        self.innerCircleWidth.constant = -25
+        self.innerCircleHeight.constant = -25
+        self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width - 2.5) / 2
     }
     
     @objc private func onButtonReleasedInside(_ sender: UIButton) {
-//        UIView.animate(withDuration: 0.5) {
-            self.innerCircleWidth.constant = -20
-            self.innerCircleHeight.constant = -20
-            self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width + 2.5) / 2
-//        }
+        self.innerCircleWidth.constant = -20
+        self.innerCircleHeight.constant = -20
+        self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width + 2.5) / 2
     }
     
     @objc private func onButtonReleasedOutside(_ sender: UIButton) {
-//        UIView.animate(withDuration: 0.5) {
-            self.innerCircleWidth.constant = -20
-            self.innerCircleHeight.constant = -20
-            self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width + 2.5) / 2
-//        }
+        self.innerCircleWidth.constant = -20
+        self.innerCircleHeight.constant = -20
+        self.innerCircle.layer.cornerRadius = (self.innerCircle.bounds.width + 2.5) / 2
     }
     
 }
