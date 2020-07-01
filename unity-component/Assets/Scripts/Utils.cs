@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Utils : MonoBehaviour
@@ -35,6 +37,15 @@ public class Utils : MonoBehaviour
 
         return image;
     }
+
+    public static IEnumerator WaitForTaskToComplete(Task t)
+    {
+        while (!t.IsCompleted)
+        {
+            yield return null;
+        }
+    }
+    
 }
 
 public enum Rotation
