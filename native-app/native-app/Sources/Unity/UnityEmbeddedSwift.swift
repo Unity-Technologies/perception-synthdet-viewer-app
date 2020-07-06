@@ -15,6 +15,8 @@ protocol NativeCallsDelegate: AnyObject {
     
     func settingsJsonDidChange(_ json: Data)
     
+    func imageRequestHandler(_ imageBytes: Data)
+    
 }
 
 class UnityEmbeddedSwift: UIResponder {
@@ -134,6 +136,11 @@ extension UnityEmbeddedSwift: NativeCallsProtocol {
     func settingsJsonDidChange(_ json: UnsafePointer<Int8>!, withCount count: Int32) {
         let data = Data(bytes: json, count: Int(count))
         delegate?.settingsJsonDidChange(data)
+    }
+    
+    func imageRequestHandler(_ bytes: UnsafePointer<Int8>!, withCount count: Int32) {
+        let data = Data(bytes: bytes, count: Int(count))
+        delegate?.imageRequestHandler(data)
     }
     
 }

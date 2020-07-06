@@ -7,5 +7,8 @@ public static class NativeApi {
     
     [DllImport("__Internal")]
     public static extern void settingsJsonDidChange(char[] json, int count);
+    
+    [DllImport("__Internal")]
+    public static extern void imageRequestHandler(byte[] bytes, int count);
 }
 #endif

@@ -21,5 +21,9 @@ extern "C" {
     void settingsJsonDidChange(const char* json, int count) {
         return [api settingsJsonDidChange:json withCount:count];
     }
+    
+    void imageRequestHandler(const char* bytes, int count) {
+        return [api imageRequestHandler:bytes withCount:count];
+    }
 }
 

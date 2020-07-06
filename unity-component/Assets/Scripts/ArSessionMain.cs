@@ -108,6 +108,8 @@ public class ArSessionMain : MonoBehaviour
     // ReSharper disable once UnusedMember.Global
     public void CaptureWithFormat(string formatString)
     {
+        arSession.enabled = true;
+
         var exportFormat = CaptureExportManager.CaptureExportFormatFromString(formatString);
 
         if (!exportFormat.HasValue)
@@ -131,6 +133,17 @@ public class ArSessionMain : MonoBehaviour
             _currentJpgBytes, 
             new Vector2Int((int) Width, (int) Height), 
             _currentClassifications);
+    }
+
+    // Can be called from native platforms to request JPEG bytes of current image
+    // ReSharper disable once UnusedMember.Global
+    public void RequestLatestImage()
+    {
+        #if UNITY_IOS
+        
+        NativeApi.imageRequestHandler(_currentJpgBytes, _currentJpgBytes.Length);
+        
+        #endif
     }
 
     private IEnumerator ProcessImage(XRCameraImage image)
