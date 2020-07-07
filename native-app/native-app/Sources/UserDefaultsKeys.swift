@@ -10,8 +10,8 @@ import Foundation
 
 enum UserDefaultsKeys {
     
-    static let predictionThreshold = "com.unity3d.perception.synthdet-demo-app.prediction-threshold"
+    static let predictionThreshold = "com.unity3d.perception.synthdet-viewer-app.prediction-threshold"
     
-    static let models = "com.unity3d.perception.synthdet-demo-app.models"
+    static let models = "com.unity3d.perception.synthdet-viewer-app.models"
     
 }

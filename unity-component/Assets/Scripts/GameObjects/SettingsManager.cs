@@ -5,7 +5,7 @@ namespace GameObjects
 {
     public class SettingsManager : MonoBehaviour
     {
-        private const string PlayerPrefsKey = "com.unity3d.synthdet-demo-app.SettingsPlayerPrefKey";
+        private const string PlayerPrefsKey = "com.unity3d.synthdet-viewer-app.SettingsPlayerPrefKey";
     
         private SettingsModel _settingsModel;
     
