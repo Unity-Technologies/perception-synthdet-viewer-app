@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Components;
 using GameObjects;
 using Models;
 using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
@@ -58,6 +60,8 @@ public class ArSessionMain : MonoBehaviour
             arSession.enabled = true;
 
             Debug.Log("AR Session started");
+            
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
     }
 
@@ -85,7 +89,7 @@ public class ArSessionMain : MonoBehaviour
         }
         
         var urlString = settingsManager.SettingsModel.activeEndpoint?.url;
-        if (!Uri.IsWellFormedUriString(urlString, UriKind.Absolute))
+        if (urlString == null || !Uri.IsWellFormedUriString(urlString, UriKind.Absolute))
         {
             Debug.LogErrorFormat("Invalid model endpoint URL: {0}", urlString);
             return;
@@ -104,6 +108,8 @@ public class ArSessionMain : MonoBehaviour
     // ReSharper disable once UnusedMember.Global
     public void CaptureWithFormat(string formatString)
     {
+        arSession.enabled = true;
+
         var exportFormat = CaptureExportManager.CaptureExportFormatFromString(formatString);
 
         if (!exportFormat.HasValue)
@@ -127,6 +133,17 @@ public class ArSessionMain : MonoBehaviour
             _currentJpgBytes, 
             new Vector2Int((int) Width, (int) Height), 
             _currentClassifications);
+    }
+
+    // Can be called from native platforms to request JPEG bytes of current image
+    // ReSharper disable once UnusedMember.Global
+    public void RequestLatestImage()
+    {
+        #if UNITY_IOS
+        
+        NativeApi.imageRequestHandler(_currentJpgBytes, _currentJpgBytes.Length);
+        
+        #endif
     }
 
     private IEnumerator ProcessImage(XRCameraImage image)
@@ -153,46 +170,53 @@ public class ArSessionMain : MonoBehaviour
             _currentJpgBytes = ConvertBufferToJpg(request.GetData<byte>(), request.conversionParams);
         }
 
-        using (var webRequest = GetRequestForImage(_currentJpgBytes, settingsManager.SettingsModel.activeEndpoint?.url))
+        using (var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(2000) })
         {
-            _activeRequests += 1;
-            webRequest.SendWebRequest();
-
-            var startTime = Time.realtimeSinceStartup;
-            var forceStopped = false;
-            
-            Console.WriteLine("START TIME: " + startTime);
-            
-            while (!webRequest.isDone && !forceStopped)
+            if (settingsManager.SettingsModel.activeEndpoint?.url == null)
             {
-                if (Time.realtimeSinceStartup > startTime + 3)
-                {
-                    Console.WriteLine("Force stopped request");
-                    webRequest.Abort();
-                    forceStopped = true;
-                }
-                
-                yield return null;
-            }
-            
-            _activeRequests -= 1;
-
-            Console.WriteLine(webRequest.error);
-            
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                Debug.LogErrorFormat("Error While Sending: {0}", webRequest.error);
+                Debug.LogWarning("Null Model Endpoint URL");
                 yield break;
             }
             
+            var content = new ByteArrayContent(_currentJpgBytes);
+            content.Headers.Add("Content-Type", "image/jpg");
+            
+            _activeRequests += 1;
+            var startTime = Time.realtimeSinceStartup;
+            
+            Task<HttpResponseMessage> webRequestTask;
+            try
+            {
+                webRequestTask = client.PostAsync(new Uri(settingsManager.SettingsModel.activeEndpoint?.url), content);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                yield break;
+            }
+
+            yield return Utils.WaitForTaskToComplete(webRequestTask);
+            _activeRequests -= 1;
+
+            Console.WriteLine("Round trip: " + (Time.realtimeSinceStartup - startTime));
+            
+            if (!webRequestTask.Result.IsSuccessStatusCode)
+            {
+                Debug.LogErrorFormat("Error While Sending: {0}", webRequestTask.Result.ReasonPhrase);
+                yield break;
+            }
+
+            var stringReadingTask = webRequestTask.Result.Content.ReadAsStringAsync();
+            yield return Utils.WaitForTaskToComplete(stringReadingTask);
+
             // Wrap output in top-level object for JsonUtility
-            var text = "{\"objects\":" + webRequest.downloadHandler.text + "}";
+            var text = "{\"objects\":" + stringReadingTask.Result + "}";
 
             // If JSON output does not have an array, the response was not a 200 OK
             // I wish JsonUtility had error handling
             if (!text.Contains("["))
             {
-                Debug.LogErrorFormat("Prediction error: {0}\n", webRequest.downloadHandler.text);
+                Debug.LogErrorFormat("Prediction error: {0}\n", stringReadingTask.Result);
                 yield break;
             }
             
@@ -246,19 +270,6 @@ public class ArSessionMain : MonoBehaviour
         return jpgData;
     }
 
-    private UnityWebRequest GetRequestForImage(byte[] jpgData, string modelUrl)
-    {
-        var request = new UnityWebRequest(modelUrl, UnityWebRequest.kHttpVerbPOST);
-        
-        request.certificateHandler = new CertificateBypassHandler();
-        request.uploadHandler = new UploadHandlerRaw(jpgData);
-        request.SetRequestHeader("Content-Type", "image/jpg");
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.timeout = 2; // Seconds
-
-        return request;
-    }
-    
     // JsonUtility needs this wrapper class since it cannot parse a top-level array
     [Serializable]
     private class JsonWrapper
@@ -266,13 +277,5 @@ public class ArSessionMain : MonoBehaviour
         #pragma warning disable 0649
         public List<ObjectClassification> objects;
         #pragma warning restore 0649
-    }
-
-    private class CertificateBypassHandler : CertificateHandler
-    {
-        protected override bool ValidateCertificate(byte[] certificateData)
-        {
-            return true;
-        }
     }
 }

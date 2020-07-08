@@ -20,11 +20,13 @@ class SettingsViewController: UITableViewController {
     
     public var settingsModel: SettingsModel?
     
+    public var dismissHandler: (() -> Void)?
+    
     private var editModelsButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
     private var doneEditingModelsButton: UIBarButtonItem?
     
-    var dismissHandler: (() -> Void)?
+    private var modelCellRowRequestingQrCode: Int?
     
     init() {
         super.init(style: .grouped)
@@ -74,14 +76,30 @@ class SettingsViewController: UITableViewController {
         tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
     }
     
+    public func useQrCodeFromImage(_ image: CIImage) {
+        let options = [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: CIContext(), options: options)
+        let features = detector?.features(in: image, options: options)
+        
+        let qrCodes = features ?? []
+            .filter { $0 is CIQRCodeFeature }
+        
+        if qrCodes.isEmpty {
+            present(Dialogs.couldNotFindQrCode, animated: true)
+        } else if let row = modelCellRowRequestingQrCode {
+            (tableView.cellForRow(at: IndexPath(row: row, section: 1)) as? ModelCell)?.modelEndpoint?.url =
+                (qrCodes[0] as? CIQRCodeFeature)?.messageString
+        }
+    }
+    
     @objc private func onEditModelsTapped(_ sender: UIBarButtonItem) {
         guard let models = settingsModel?.modelEndpoints else { return }
-        
+
         tableView.isEditing = true
-        
+
         navigationItem.leftBarButtonItem = nil
         navigationItem.rightBarButtonItem = doneEditingModelsButton
-        
+
         tableView.beginUpdates()
         tableView.insertRows(at: [IndexPath(row: models.count, section: 1)], with: .top)
         tableView.endUpdates()
@@ -237,6 +255,12 @@ extension SettingsViewController: ModelCellDelegate {
         if let row = modelCell.row, let modelEndpoint = modelEndpoint {
             settingsModel?.modelEndpoints[row] = modelEndpoint
         }
+    }
+    
+    func modelCell(_ modelCell: ModelCell, requestedQrCodeAtRow row: Int?) {
+        modelCellRowRequestingQrCode = row
+        
+        UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main", method: "RequestLatestImage")
     }
     
 }

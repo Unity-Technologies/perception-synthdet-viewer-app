@@ -9,4 +9,4 @@
 import Foundation
 import Logging
 
-let logger = Logger(label: "com.unity3d.synthdet-demo-app")
+let logger = Logger(label: "com.unity3d.synthdet-viewer-app")

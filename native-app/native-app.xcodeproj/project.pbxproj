@@ -76,7 +76,7 @@
 		3286CB142499415700F24461 /* ActionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionListViewController.swift; sourceTree = "<group>"; };
 		3286CB16249BC89800F24461 /* ShutterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShutterButton.swift; sourceTree = "<group>"; };
 		3286CB1824A167E600F24461 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
-		32883A2524881133005D0FE1 /* Unity SynthDet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unity SynthDet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		32883A2524881133005D0FE1 /* Unity SynthDet Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unity SynthDet Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32883A2824881133005D0FE1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		32883A2A24881133005D0FE1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		32883A2C24881133005D0FE1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -200,7 +200,7 @@
 		32883A2624881133005D0FE1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				32883A2524881133005D0FE1 /* Unity SynthDet.app */,
+				32883A2524881133005D0FE1 /* Unity SynthDet Viewer.app */,
 				320A07B5248FF93900B93CB5 /* unit-tests-2.xctest */,
 			);
 			name = Products;
@@ -270,7 +270,7 @@
 				32EC7BCE248ADCB900AA2BE5 /* Logging */,
 			);
 			productName = "native-app";
-			productReference = 32883A2524881133005D0FE1 /* Unity SynthDet.app */;
+			productReference = 32883A2524881133005D0FE1 /* Unity SynthDet Viewer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -561,7 +561,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
-				PRODUCT_NAME = "Unity SynthDet";
+				PRODUCT_NAME = "Unity SynthDet Viewer";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -586,7 +586,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
-				PRODUCT_NAME = "Unity SynthDet";
+				PRODUCT_NAME = "Unity SynthDet Viewer";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

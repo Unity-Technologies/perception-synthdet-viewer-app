@@ -225,4 +225,8 @@ extension ViewController: NativeCallsDelegate {
         }
     }
     
+    func imageRequestHandler(_ imageBytes: Data) {
+        self.settingsViewController.useQrCodeFromImage(CIImage(cgImage: UIImage(data: imageBytes)!.cgImage!))
+    }
+    
 }

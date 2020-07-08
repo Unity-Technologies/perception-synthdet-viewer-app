@@ -37,4 +37,13 @@ enum Dialogs {
         return alert
     }
     
+    static var couldNotFindQrCode: UIAlertController {
+        let alert = UIAlertController(title: "No QR Code in View",
+                                      message: "Please position a QR code within your device's camera before scanning",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        return alert
+    }
+    
 }
