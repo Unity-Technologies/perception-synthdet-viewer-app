@@ -99,7 +99,7 @@ class ViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = "Unity SynthDet"
+        navigationItem.title = "Unity SynthDet Viewer"
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(onSettingsTapped))
         navigationItem.rightBarButtonItem?.isEnabled = false

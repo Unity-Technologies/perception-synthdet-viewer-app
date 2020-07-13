@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "32883A2424881133005D0FE1"
-               BuildableName = "Unity SynthDet.app"
+               BuildableName = "Unity SynthDet Viewer.app"
                BlueprintName = "native-app"
                ReferencedContainer = "container:native-app.xcodeproj">
             </BuildableReference>
@@ -55,7 +55,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32883A2424881133005D0FE1"
-            BuildableName = "Unity SynthDet.app"
+            BuildableName = "Unity SynthDet Viewer.app"
             BlueprintName = "native-app"
             ReferencedContainer = "container:native-app.xcodeproj">
          </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32883A2424881133005D0FE1"
-            BuildableName = "Unity SynthDet.app"
+            BuildableName = "Unity SynthDet Viewer.app"
             BlueprintName = "native-app"
             ReferencedContainer = "container:native-app.xcodeproj">
          </BuildableReference>
