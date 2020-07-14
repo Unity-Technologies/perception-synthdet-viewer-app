@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARSubsystems;
 
 public class Utils : MonoBehaviour
 {
@@ -36,6 +41,45 @@ public class Utils : MonoBehaviour
         Destroy(rt);
 
         return image;
+    }
+    
+    [CanBeNull]
+    public static unsafe byte[] GetJpgBytesSync(ARCameraManager cameraManager)
+    {
+        if (!cameraManager.TryGetLatestImage(out var image))
+        {
+            return null;
+        }
+        
+        var conversionParams = new XRCameraImageConversionParams
+        {
+            inputRect = new RectInt(0, 0, image.width, image.height),
+            outputDimensions = new Vector2Int(image.width, image.height),
+            outputFormat = TextureFormat.RGBA32,
+            transformation = CameraImageTransformation.MirrorY
+        };
+        
+        var size = image.GetConvertedDataSize(conversionParams);
+        var buffer = new NativeArray<byte>(size, Allocator.Temp);
+
+        image.Convert(conversionParams, new IntPtr(buffer.GetUnsafePtr()), buffer.Length);
+        image.Dispose();
+
+        var texture = new Texture2D(
+            conversionParams.outputDimensions.x,
+            conversionParams.outputDimensions.y,
+            conversionParams.outputFormat,
+            false);
+
+        texture.LoadRawTextureData(buffer);
+        texture.Apply();
+        
+        var bytes = texture.EncodeToJPG();
+        
+        buffer.Dispose();
+        Destroy(texture);
+
+        return bytes;
     }
 
     public static IEnumerator WaitForTaskToComplete(Task t)

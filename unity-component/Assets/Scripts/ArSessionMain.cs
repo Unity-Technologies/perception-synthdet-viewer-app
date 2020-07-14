@@ -6,8 +6,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Components;
 using GameObjects;
+using JetBrains.Annotations;
 using Models;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -141,7 +143,18 @@ public class ArSessionMain : MonoBehaviour
     {
         #if UNITY_IOS
         
-        NativeApi.imageRequestHandler(_currentJpgBytes, _currentJpgBytes.Length);
+        // This is a hack; Because ARKit only allows for one AVCaptureSession at a time (and that one session is used by
+        // ARKit), we cannot start a new one for reading QR codes, so image requests need to come from the camera already
+        // in use
+        var imageBytes = Utils.GetJpgBytesSync(cameraManager);
+
+        if (imageBytes == null)
+        {
+            Debug.LogWarning("Could not get current JPG bytes");
+            return;
+        }
+        
+        NativeApi.imageRequestHandler(imageBytes, imageBytes.Length);
         
         #endif
     }
