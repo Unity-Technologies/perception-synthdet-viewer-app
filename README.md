@@ -10,13 +10,12 @@ This is an app for iPhone and iPad that displays results of object detection mac
 * Capture, share, and export the results of your object detection
 
 ## Usage
-1. Host your SynthDet trained model using [perception-synthdet-torchserve](https://github.com/Unity-Technologies/perception-synthdet-torchserve).
-2. Install the app from the [App Store]().
-3. Run the app, and tap on Settings in the top right corner. Tap Edit Models, and then Add Model Endpoint.
-4. In the row for your new model endpoint, enter a name (this can be anything you want, something to remember the model by). Then, enter the URL where the app should send prediction requests. If you don't want to type in a long URL on your iOS device, feel free to use the `qr.sh` script in perception-synthdet-torchserve, which will generate QR codes for the model endpoints it exposes.
-5. Tap Done Editing, then Done.
-6. Select your model by tapping Choose Model at the bottom of your screen. If the button displays the name of one of your models, that model is selected.
-7. Point your device at some groceries, and watch the boxes be drawn!
+
+| Section | Steps |
+| ------- | ----- |
+| Dependencies | TorchServe REST server: Host your SynthDet trained model using [perception-synthdet-torchserve](https://github.com/Unity-Technologies/perception-synthdet-torchserve). |
+| Installation | <ul><li>Install the app from the [App Store]().</li><li> Build from source with the steps in "How to build"</li></ul> |
+| Run | <ol><li>Run the app, and tap on Settings in the top right corner. Tap Edit Models, and then Add Model Endpoint.</li><li>In the row for your new model endpoint, enter a name (this can be anything you want, something to remember the model by). Then, enter the URL where the app should send prediction requests. If you don't want to type in a long URL on your iOS device, feel free to use the `qr.sh` script in perception-synthdet-torchserve, which will generate QR codes for the model endpoints it exposes.</li><li>Tap Done Editing, then Done.</li><li>Select your model by tapping Choose Model at the bottom of your screen. If the button displays the name of one of your models, that model is selected.</li><li>Point your device at some groceries, and watch the boxes be drawn!</li></ol> |
 
 ### Button Functions
 | Button | What it does | Where it is |
