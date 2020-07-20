@@ -14,7 +14,7 @@ This is an app for iPhone and iPad that displays results of object detection mac
 | Section | Steps |
 | ------- | ----- |
 | Dependencies | TorchServe REST server: Host your SynthDet trained model using [perception-synthdet-torchserve](https://github.com/Unity-Technologies/perception-synthdet-torchserve). |
-| Installation | <ul><li>Install the app from the [App Store]().</li><li> Build from source with the steps in "How to build"</li></ul> |
+| Installation | <ul><li>Install the app from the [App Store]() (recommended), or</li><li> Build from source with the steps in [How to Build](https://github.com/Unity-Technologies/perception-synthdet-demo-app#how-to-build)</li></ul> |
 | Run | <ol><li>Run the app, and tap on Settings in the top right corner. Tap Edit Models, and then Add Model Endpoint.</li><li>In the row for your new model endpoint, enter a name (this can be anything you want, something to remember the model by). Then, enter the URL where the app should send prediction requests. If you don't want to type in a long URL on your iOS device, feel free to use the `qr.sh` script in perception-synthdet-torchserve, which will generate QR codes for the model endpoints it exposes.</li><li>Tap Done Editing, then Done.</li><li>Select your model by tapping Choose Model at the bottom of your screen. If the button displays the name of one of your models, that model is selected.</li><li>Point your device at some groceries, and watch the boxes be drawn!</li></ol> |
 
 ### Button Functions
@@ -26,8 +26,8 @@ This is an app for iPhone and iPad that displays results of object detection mac
 | Delete All Captures | Deletes all captures taken | Settings screen |
 | QR | Reads current camera image for QR codes; if it finds one, places the text in the URL box next to it | Settings screen, on each model row |
 
-## How to build
-You will need a Mac with Xcode 11.5 or later, and Unity 2019.3.14f1 or later. The app is available on the [App Store](), so we reccomend installing it that way.
+## How to Build
+You will need a Mac with Xcode 11.5 or later, and Unity 2019.3.14f1 or later. The app is available on the [App Store](), so we recommend installing it that way.
 <br/>
 
 Before building, make sure your Unity installation has the iOS Build Support module installed. In Unity Hub, click on the three vertical dots in the top right of your chosen installation in the Installs menu. Click Add Modules, select iOS Build Support, and click Done. Wait while the install finishes.
