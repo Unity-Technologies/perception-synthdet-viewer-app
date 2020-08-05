@@ -1,4 +1,4 @@
-![App on iPad Pro](docs/images/app-on-ipad.png)
+![App on iPad Pro](docs/images/app-on-ipad.PNG)
 
 # SynthDet Viewer App for iOS
 Test your machine learning models generated with Unity SynthDet in real life using Unity SynthDet Viewer! This app uses your device’s camera to send a stream of pictures to your machine learning models. Host your machine learning models online, and point the app to your server. Bounding boxes will appear around everything your ML models detect. Capture, share, and export the results of your object detection.
