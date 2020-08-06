@@ -12,8 +12,8 @@ namespace Components
     [RequireComponent(typeof(ARRaycastManager))]
     public class BoundingBoxManager : MonoBehaviour
     {
-        public GameObject placedPrefab;
-        public ARCameraManager cameraManager;
+        [SerializeField] private LabeledBoundingBox placedPrefab;
+        [SerializeField] private ARCameraManager cameraManager;
     
         // ARRaycastManager component used for doing raycasts onto planes in AR
         private ARRaycastManager _arRaycastManager;
@@ -22,8 +22,8 @@ namespace Components
         private static List<GameObject> _boundingBoxes = new List<GameObject>();
 
         private const int SurroundingPixelDistance = 10; // Amount of pixels to go out in each direction when finding distance per pixel
-        private const float LabeledBoundingBoxScale = 0.1f; // Scale of LabeledBoundingBox prefab
-        private const float RectangleScale = 0.1f; // Scale of rectangle on LabeledBoundingBox prefab
+        private const float LabeledBoundingBoxScale = 0.2f; // Scale of LabeledBoundingBox prefab
+        private const float RectangleScale = 0.2f; // Scale of rectangle on LabeledBoundingBox prefab
         private const int TransientBoxUpdateCount = 1; // Amount of updates a box can go through without being reused
 
         private void Awake()
@@ -123,9 +123,9 @@ namespace Components
         private GameObject GetNewBoundingBoxForClassification(ObjectClassification classification, 
             Vector3 position, float distancePerPixel)
         {
-            var boxGameObject = Instantiate(placedPrefab, position, cameraManager.transform.rotation);
-            var boundingBox = boxGameObject.GetComponent<LabeledBoundingBox>();
-            
+            var boundingBox = Instantiate(placedPrefab, position, cameraManager.transform.rotation);
+            boundingBox.cameraManager = cameraManager;
+
             boundingBox.SetWidth(classification.box.Size().x * distancePerPixel / LabeledBoundingBoxScale / RectangleScale);
             boundingBox.SetHeight(classification.box.Size().y * distancePerPixel / LabeledBoundingBoxScale / RectangleScale);
             boundingBox.SetColor(BoxColors.ColorForItemLabel(classification.label) ?? Color.black);
@@ -133,7 +133,7 @@ namespace Components
             boundingBox.SetPredictionScore(classification.score);
             boundingBox.UpdatesRemaining = TransientBoxUpdateCount;
 
-            return boxGameObject;
+            return boundingBox.gameObject;
         }
 
         // Finds a possible matching bounding box for the given ObjectClassification. Returns that box if found, otherwise null

@@ -153,7 +153,7 @@ public static class StringExtensions
     {
         if (!String.IsNullOrWhiteSpace(text))
         {
-            int charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
+            var charLocation = text.IndexOf(stopAt, StringComparison.Ordinal);
 
             if (charLocation > 0)
             {
@@ -162,5 +162,24 @@ public static class StringExtensions
         }
 
         return String.Empty;
+    }
+}
+
+public static class TextMeshExtensions
+{
+    // Returns intrinsic content width of a TextMesh. This factors in font sizes and styles.
+    public static float GetTextWidth(this TextMesh textMesh)
+    {
+        var width = 0;
+        
+        foreach (var symbol in textMesh.text)
+        {
+            if (textMesh.font.GetCharacterInfo(symbol, out var info, textMesh.fontSize, textMesh.fontStyle))
+            {
+                width += info.advance;
+            }
+        }
+        
+        return width * textMesh.characterSize * 0.1f;
     }
 }
