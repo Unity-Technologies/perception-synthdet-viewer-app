@@ -285,7 +285,6 @@
 				TargetAttributes = {
 					320A07B4248FF93900B93CB5 = {
 						CreatedOnToolsVersion = 11.5;
-						TestTargetID = 32883A2424881133005D0FE1;
 					};
 					32883A2424881133005D0FE1 = {
 						CreatedOnToolsVersion = 11.5;
@@ -394,9 +393,8 @@
 		320A07BC248FF93900B93CB5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 39LL6Q9676;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "unit-tests-2/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -405,18 +403,18 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.unity3d.synthdet-demo-app.unit-tests-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Unity SynthDet.app/Unity SynthDet";
 			};
 			name = Debug;
 		};
 		320A07BD248FF93900B93CB5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 39LL6Q9676;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "unit-tests-2/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -425,9 +423,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.unity3d.synthdet-demo-app.unit-tests-2";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Unity SynthDet.app/Unity SynthDet";
 			};
 			name = Release;
 		};
