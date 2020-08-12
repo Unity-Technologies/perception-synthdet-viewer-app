@@ -19,6 +19,9 @@ protocol NativeCallsDelegate: AnyObject {
     
 }
 
+///
+/// Bridging class between Unity and Swift code
+///
 class UnityEmbeddedSwift: UIResponder {
     
     private var ufw : UnityFramework?

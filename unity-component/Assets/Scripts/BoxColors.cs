@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BoxColors
+/// <summary>
+/// Class for obtaining colors of bounding boxes; boxes are colored according to item category
+/// </summary>
+public static class BoxColors
 {
-    private static  Dictionary<string, Color> _labelPrefixToColorMap = new Dictionary<string, Color>();
+    private static readonly Dictionary<string, Color> _labelPrefixToColorMap = new Dictionary<string, Color>();
 
     static BoxColors() 
     {
@@ -16,7 +19,7 @@ public class BoxColors
         _labelPrefixToColorMap.Add("cracker", Utils.ColorFromRgba255(175, 82, 222));
         _labelPrefixToColorMap.Add("craft", Utils.ColorFromRgba255(255, 59, 48));
         _labelPrefixToColorMap.Add("drink", Utils.ColorFromRgba255(90, 200, 250));
-        _labelPrefixToColorMap.Add("footware", Utils.ColorFromRgba255(255, 204, 0));
+        _labelPrefixToColorMap.Add("footware", Utils.ColorFromRgba255(255, 204, 0)); // Spelled like this in SynthDet too
         _labelPrefixToColorMap.Add("hygiene", Utils.ColorFromRgba255(255, 204, 0));
         _labelPrefixToColorMap.Add("lotion", Utils.ColorFromRgba255(0, 122, 255));
         _labelPrefixToColorMap.Add("pasta", Utils.ColorFromRgba255(52, 199, 89));

@@ -11,6 +11,7 @@ namespace Components
         Unknown
     }
     
+    // Since Screen.orientation isn't always correct, this component is needed to track screen orientation
     public class OrientationObserver : MonoBehaviour
     {
         public Orientation ScreenOrientation { get; private set; } = Orientation.Unknown;
@@ -19,6 +20,7 @@ namespace Components
         {
             switch (Input.deviceOrientation)
             {
+                // For the first four, Input.deviceOrientation and screen orientation are the same
                 case DeviceOrientation.Portrait: 
                     ScreenOrientation = Orientation.Portrait;
                     break;
@@ -32,6 +34,7 @@ namespace Components
                     ScreenOrientation = Orientation.LandscapeRight;
                     break;
                 default: 
+                    // Otherwise, if the orientation is still unknown, fall back on Screen.orientation
                     if (ScreenOrientation == Orientation.Unknown)
                     {
                         ScreenOrientation = OrientationForScreenOrientation(Screen.orientation);

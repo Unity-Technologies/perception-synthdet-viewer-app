@@ -11,12 +11,20 @@ using Application = UnityEngine.Application;
 
 namespace Components
 {
+    /// <summary>
+    /// Component for exporting labeled images and original images with COCO JSON
+    /// </summary>
     public class CaptureExportManager : MonoBehaviour
     {
         public enum CaptureExportFormat
         {
+            // Image seen by the user in AR; screenshot of AR camera
             LabeledImage,
+            
+            // Image seen by AR Foundation and sent to TorchServe without any boxes drawn on it
             OriginalImageWithJsonAnnotations,
+            
+            // Both labeled and original images
             Both
         }
         

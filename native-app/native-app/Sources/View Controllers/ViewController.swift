@@ -9,6 +9,9 @@
 import UIKit
 import AVKit
 
+///
+/// Main VC of the app; this VC contains the Unity view for AR, shutter button, model selection, and navigation bar with settings button
+///
 class ViewController: UIViewController {
     
     private let decoder: JSONDecoder = {
@@ -98,6 +101,8 @@ class ViewController: UIViewController {
         }
     }
     
+    // MARK: - UI Setup
+    
     private func setupNavigationBar() {
         navigationItem.title = "Unity SynthDet Viewer"
         
@@ -151,6 +156,8 @@ class ViewController: UIViewController {
         shutterButton.addTarget(self, action: #selector(onShutterButtonTapped), for: .touchUpInside)
     }
     
+    // MARK: - Helper functions
+    
     private func changeActiveEndpoint() {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(self.settings?.activeEndpoint),
@@ -171,6 +178,8 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    // MARK: - Button press callbacks
     
     @objc private func onSettingsTapped(_ sender: UIBarButtonItem) {
         let settingsNavVc = UINavigationController(rootViewController: settingsViewController)
@@ -209,6 +218,8 @@ class ViewController: UIViewController {
     }
     
 }
+
+// MARK: - NativeCallsDelegate implementation for receiving events from Unity
 
 extension ViewController: NativeCallsDelegate {
     

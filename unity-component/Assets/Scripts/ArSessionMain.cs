@@ -28,10 +28,10 @@ public class ArSessionMain : MonoBehaviour
     private CaptureExportManager _captureExportManager;
     private OrientationObserver _orientationObserver;
     
-    public ARSession arSession;
-    public ARCameraManager cameraManager;
-    public BoundingBoxManager boundingBoxManager;
-    public SettingsManager settingsManager;
+    [SerializeField] public ARSession arSession;
+    [SerializeField] public ARCameraManager cameraManager;
+    [SerializeField] public BoundingBoxManager boundingBoxManager;
+    [SerializeField] public SettingsManager settingsManager;
 
     private float _lastTime;
 
@@ -46,6 +46,9 @@ public class ArSessionMain : MonoBehaviour
         _orientationObserver = GetComponent<OrientationObserver>();
     }
 
+    /// <summary>
+    /// Entry point of the whole Unity component; this function starts the AR session
+    /// </summary>
     private IEnumerator Start() {
         if (ARSession.state == ARSessionState.None ||
             ARSession.state == ARSessionState.CheckingAvailability)
@@ -59,10 +62,13 @@ public class ArSessionMain : MonoBehaviour
         }
         else
         {
+            // Start the AR Session
             arSession.enabled = true;
 
             Debug.Log("AR Session started");
             
+            // Accept any SSL certificate as valid. Because people may self-sign their HTTPS certs we need this.
+            // But for this reason I would not use HTTPS as a means of verification since anyone could spoof the certificate
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
         }
     }
@@ -79,6 +85,7 @@ public class ArSessionMain : MonoBehaviour
 
     private void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs)
     {
+        // Make sure UpdatesPerSecond is not being exceeded
         if (1 / (Time.realtimeSinceStartup - _lastTime) > UpdatesPerSecond)
         {
             return;
@@ -102,6 +109,7 @@ public class ArSessionMain : MonoBehaviour
             return;
         }
 
+        // Process image in coroutine once it's available
         StartCoroutine(ProcessImage(image));
         image.Dispose();
     }
@@ -159,6 +167,7 @@ public class ArSessionMain : MonoBehaviour
         #endif
     }
 
+    // Convert image to correct size, rotate it, send it off to TorchServe, and draw resulting bounding boxes
     private IEnumerator ProcessImage(XRCameraImage image)
     {
         using (var request = image.ConvertAsync(new XRCameraImageConversionParams
@@ -194,16 +203,18 @@ public class ArSessionMain : MonoBehaviour
             var content = new ByteArrayContent(_currentJpgBytes);
             content.Headers.Add("Content-Type", "image/jpg");
             
-            _activeRequests += 1;
             var startTime = Time.realtimeSinceStartup;
             
             Task<HttpResponseMessage> webRequestTask;
             try
             {
+                _activeRequests += 1;
                 webRequestTask = client.PostAsync(new Uri(settingsManager.SettingsModel.activeEndpoint?.url), content);
             }
             catch (Exception e)
             {
+                _activeRequests -= 1;
+                
                 Console.WriteLine(e);
                 yield break;
             }

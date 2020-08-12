@@ -9,6 +9,9 @@ using UnityEngine.XR.ARSubsystems;
 
 namespace Components
 {
+    /// <summary>
+    /// Component for rendering bounding boxes in augmented reality
+    /// </summary>
     [RequireComponent(typeof(ARRaycastManager))]
     public class BoundingBoxManager : MonoBehaviour
     {

@@ -20,8 +20,6 @@ class SettingsViewController: UITableViewController {
     
     public var settingsModel: SettingsModel?
     
-    public var dismissHandler: (() -> Void)?
-    
     private var editModelsButton: UIBarButtonItem?
     private var doneButton: UIBarButtonItem?
     private var doneEditingModelsButton: UIBarButtonItem?
@@ -47,6 +45,7 @@ class SettingsViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set a default settings model if there isn't one already
         if settingsModel == nil {
             settingsModel = SettingsModel(predictionScoreThreshold: 0.75, modelEndpoints: [], activeEndpoint: nil)
         }
@@ -67,8 +66,6 @@ class SettingsViewController: UITableViewController {
             UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings", method: "SetSettingsModelFromJson", message: json)
             UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("Settings", method: "SaveSettings")
         }
-        
-        dismissHandler?()
     }
     
     public func reloadSettings() {
@@ -86,9 +83,9 @@ class SettingsViewController: UITableViewController {
         
         if qrCodes.isEmpty {
             present(Dialogs.couldNotFindQrCode, animated: true)
-        } else if let row = modelCellRowRequestingQrCode {
-            (tableView.cellForRow(at: IndexPath(row: row, section: 1)) as? ModelCell)?.modelEndpoint?.url =
-                (qrCodes[0] as? CIQRCodeFeature)?.messageString
+        } else if let row = modelCellRowRequestingQrCode,
+            let modelCell = tableView.cellForRow(at: IndexPath(row: row, section: 1)) as? ModelCell {
+            modelCell.modelEndpoint?.url = (qrCodes[0] as? CIQRCodeFeature)?.messageString
         }
     }
     
@@ -160,7 +157,7 @@ extension SettingsViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
-        case 1: return (settingsModel?.modelEndpoints.count ?? 0) + (tableView.isEditing ? 1 : 0)
+        case 1: return (settingsModel?.modelEndpoints.count ?? 0) + (tableView.isEditing ? 1 : 0) // Account for add models cell when editing
         case 2: return 1
         case 3: return 1
         default: return 0

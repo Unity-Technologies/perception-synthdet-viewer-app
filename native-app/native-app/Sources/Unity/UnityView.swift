@@ -8,6 +8,11 @@
 
 import UIKit
 
+///
+/// Wrapper view class around `UnityEmbeddedSwift`.
+///
+/// This view will fill its rect with the Unity view and respects layout constraints
+///
 class UnityView: UIView {
     
     private var unityView: UIView?

@@ -27,3 +27,6 @@ This is an app for iPhone and iPad that displays results of object detection mac
 | Share Captures | Shares a folder of all captures taken with the Shutter Button. This uses the iOS Share Sheet, so you can share your captures like normal photos on iOS, sending them via AirDrop, Google Drive, email, text, etc | Settings screen |
 | Delete All Captures | Deletes all captures taken | Settings screen |
 | QR | Reads current camera image for QR codes; if it finds one, places the text in the URL box next to it | Settings screen, on each model row |
+
+## Development
+Check out the guide for [developing new features](https://github.com/Unity-Technologies/perception-synthdet-viewer-app/blob/master/docs/development.md).

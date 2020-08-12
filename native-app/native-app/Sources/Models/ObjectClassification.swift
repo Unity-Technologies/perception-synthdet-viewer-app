@@ -6,6 +6,9 @@
 //  Copyright © 2020 Unity Technologies. All rights reserved.
 //
 
+// These models are unused since all processing was moved to Unity
+
+
 struct ObjectClassification: Codable {
     
     let label: String

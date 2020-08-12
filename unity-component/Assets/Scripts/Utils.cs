@@ -94,10 +94,10 @@ public class Utils : MonoBehaviour
 
 public enum Rotation
 {
-    Left, 
-    Right, 
-    HalfCircle,
-    Up
+    Left, // Rotate left by 90°
+    Right, // Rotate right by 90°
+    HalfCircle, // Rotate by 180°
+    Up // Rotate by nothing
 }
 
 public static class Texture2DExtensions 

@@ -9,7 +9,6 @@
 - (void) arFoundationDidReceiveCameraFrame:(const char*)bytes withCount:(int) count;
 - (void) settingsJsonDidChange:(const char*)json withCount:(int) count;
 - (void) imageRequestHandler:(const char*)bytes withCount:(int) count;
-// other methods
 @end
 
 __attribute__ ((visibility("default")))

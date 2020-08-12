@@ -6,7 +6,7 @@ namespace GameObjects
 {
     public class LabeledBoundingBox : MonoBehaviour
     {
-        private static int _sortOrder = 0;
+        private static int _sortOrder;
         
         [SerializeField] public ARCameraManager cameraManager;
         [SerializeField] private SpriteRenderer rectangle;
@@ -20,10 +20,13 @@ namespace GameObjects
         private string _label = "";
         private float _predictionScore;
 
+        private const float TextBackgroundHeight = 0.5f;
+
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
             
+            // Increment the sort order when box is first created
             _sortOrder++;
         }
 
@@ -33,6 +36,8 @@ namespace GameObjects
             textBackground.transform.SetParent(rectangle.transform);
             textMesh.transform.SetParent(textBackground.transform);
 
+            // Set the incremented sort order for the rectangle and text background
+            // so it never overlaps with another rectangle causing graphical glitches
             rectangle.sortingOrder = _sortOrder;
             textBackground.sortingOrder = _sortOrder;
         }
@@ -41,6 +46,7 @@ namespace GameObjects
         {
             var eulerAngles = cameraManager.transform.eulerAngles;
         
+            // Rotate box in the same direction as the camera so the text appears to always face the screen
             transform.eulerAngles = eulerAngles;
         }
 
@@ -54,13 +60,13 @@ namespace GameObjects
         private void UpdateTextSize()
         {
             // Set text background size to the larger of text size or width of bounding box
-            textBackground.size = new Vector2(Math.Max(textMesh.GetTextWidth(), rectangle.size.x), 0.5f);
+            textBackground.size = new Vector2(Math.Max(textMesh.GetTextWidth(), rectangle.size.x), TextBackgroundHeight);
             
             // Set local position so that the left edge of the text aligns with the left of the background
             // (TextMesh aligns text to the pivot which needs to be centered for positioning)
-            textBackground.transform.localPosition = new Vector3((textBackground.size.x - rectangle.size.x) / 2.0f, 0.25f + rectangle.size.y / 2, 0);
+            textBackground.transform.localPosition = new Vector3((textBackground.size.x - rectangle.size.x) / 2, TextBackgroundHeight / 2 + rectangle.size.y / 2, 0);
             
-            // Position text so text aligns to the left, and move it forward by 0.01 units so it does not collide with background
+            // Position text so text aligns to the left, and move it forward by a tiny amount so it does not collide with background
             textMesh.transform.localPosition = new Vector3(-textBackground.size.x / 2, 0, -0.01f);
         }
 

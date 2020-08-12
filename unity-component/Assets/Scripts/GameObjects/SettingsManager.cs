@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace GameObjects
 {
+    /// <summary>
+    /// Component for saving and loading app settings
+    /// </summary>
     public class SettingsManager : MonoBehaviour
     {
         private const string PlayerPrefsKey = "com.unity3d.synthdet-viewer-app.SettingsPlayerPrefKey";
