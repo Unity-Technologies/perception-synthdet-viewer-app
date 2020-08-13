@@ -30,3 +30,6 @@ This is an app for iPhone and iPad that displays results of object detection mac
 
 ## Development
 Check out the guide for [developing new features](https://github.com/Unity-Technologies/perception-synthdet-viewer-app/blob/master/docs/development.md).
+
+## License
+* [License](LICENSE.md)
