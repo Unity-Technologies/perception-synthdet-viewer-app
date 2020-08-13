@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		320A07C224940C5600B93CB5 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320A07C124940C5600B93CB5 /* SettingsViewController.swift */; };
 		320A07C524940F2900B93CB5 /* ThresholdCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320A07C424940F2900B93CB5 /* ThresholdCell.swift */; };
-		320A07C7249413E700B93CB5 /* UserDefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 320A07C6249413E700B93CB5 /* UserDefaultsKeys.swift */; };
 		3217D43B248AD4A9005A1B58 /* UnityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D43A248AD4A9005A1B58 /* UnityView.swift */; };
 		3217D43D248ADCDD005A1B58 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D43C248ADCDD005A1B58 /* Logging.swift */; };
 		3217D446248EE90D005A1B58 /* ObjectClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3217D445248EE90D005A1B58 /* ObjectClassification.swift */; };
@@ -48,7 +47,6 @@
 /* Begin PBXFileReference section */
 		320A07C124940C5600B93CB5 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		320A07C424940F2900B93CB5 /* ThresholdCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdCell.swift; sourceTree = "<group>"; };
-		320A07C6249413E700B93CB5 /* UserDefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsKeys.swift; sourceTree = "<group>"; };
 		3217D43A248AD4A9005A1B58 /* UnityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityView.swift; sourceTree = "<group>"; };
 		3217D43C248ADCDD005A1B58 /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
 		3217D43F248B245F005A1B58 /* native-app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "native-app-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -120,7 +118,6 @@
 				32883A2824881133005D0FE1 /* AppDelegate.swift */,
 				3217D43C248ADCDD005A1B58 /* Logging.swift */,
 				32883A2A24881133005D0FE1 /* SceneDelegate.swift */,
-				320A07C6249413E700B93CB5 /* UserDefaultsKeys.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -284,7 +281,6 @@
 				3286CB1024981B3000F24461 /* ModelEndpoint.swift in Sources */,
 				3217D448248EE937005A1B58 /* BoundingBox.swift in Sources */,
 				32883A2924881133005D0FE1 /* AppDelegate.swift in Sources */,
-				320A07C7249413E700B93CB5 /* UserDefaultsKeys.swift in Sources */,
 				3217D446248EE90D005A1B58 /* ObjectClassification.swift in Sources */,
 				3286CB17249BC89800F24461 /* ShutterButton.swift in Sources */,
 				322B32EB24ABCF27008883DF /* Dialogs.swift in Sources */,

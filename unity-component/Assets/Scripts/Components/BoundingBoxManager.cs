@@ -38,6 +38,8 @@ namespace Components
         {
             _boundingBoxes.RemoveAll(box =>
             {
+                // When box no longer has any updates left, remove it. A box can last for several updates since
+                // the boxes may flicker if the object is identified in one frame and then not in another
                 if (box.GetComponent<LabeledBoundingBox>().UpdatesRemaining == 0)
                 {
                     Destroy(box);
@@ -82,6 +84,8 @@ namespace Components
                     .FindAll(points => points.Count > 0)
                     .Count;
 
+                // Find all surrounding distances, divide each by number of distances, then sum for average distance
+                // After dividing by surrounding pixel distance, will result in distance per pixel
                 var distancePerPixel = surroundingHits
                     .FindAll(hits => hits.Count > 0)
                     .ConvertAll(hits => hits.First().pose.position)
