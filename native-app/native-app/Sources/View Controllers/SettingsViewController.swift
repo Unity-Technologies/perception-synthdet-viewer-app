@@ -47,7 +47,7 @@ class SettingsViewController: UITableViewController {
         
         // Set a default settings model if there isn't one already
         if settingsModel == nil {
-            settingsModel = SettingsModel(predictionScoreThreshold: 0.75, modelEndpoints: [], activeEndpoint: nil)
+            settingsModel = SettingsModel(predictionScoreThreshold: 0.98, modelEndpoints: [], activeEndpoint: nil)
         }
         
         editModelsButton = UIBarButtonItem(title: "Edit Models", style: .plain, target: self, action: #selector(onEditModelsTapped))

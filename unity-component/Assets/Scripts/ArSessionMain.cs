@@ -141,6 +141,7 @@ public class ArSessionMain : MonoBehaviour
             _currentJpgBytes, 
             new Vector2Int((int) Width, (int) Height), 
             _currentClassifications);
+        
     }
 
     // Can be called from native platforms to request JPEG bytes of current image
@@ -235,7 +236,6 @@ public class ArSessionMain : MonoBehaviour
             var text = "{\"objects\":" + stringReadingTask.Result + "}";
 
             // If JSON output does not have an array, the response was not a 200 OK
-            // I wish JsonUtility had error handling
             if (!text.Contains("["))
             {
                 Debug.LogErrorFormat("Prediction error: {0}\n", stringReadingTask.Result);

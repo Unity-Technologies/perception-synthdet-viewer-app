@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "32883A2424881133005D0FE1"
                BuildableName = "Unity SynthDet Viewer.app"
-               BlueprintName = "native-app"
-               ReferencedContainer = "container:native-app.xcodeproj">
+               BlueprintName = "SynthDetViewer"
+               ReferencedContainer = "container:SynthDetViewer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "320A07B4248FF93900B93CB5"
                BuildableName = "unit-tests-2.xctest"
                BlueprintName = "unit-tests-2"
-               ReferencedContainer = "container:native-app.xcodeproj">
+               ReferencedContainer = "container:SynthDetViewer.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -56,8 +56,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32883A2424881133005D0FE1"
             BuildableName = "Unity SynthDet Viewer.app"
-            BlueprintName = "native-app"
-            ReferencedContainer = "container:native-app.xcodeproj">
+            BlueprintName = "SynthDetViewer"
+            ReferencedContainer = "container:SynthDetViewer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -73,8 +73,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "32883A2424881133005D0FE1"
             BuildableName = "Unity SynthDet Viewer.app"
-            BlueprintName = "native-app"
-            ReferencedContainer = "container:native-app.xcodeproj">
+            BlueprintName = "SynthDetViewer"
+            ReferencedContainer = "container:SynthDetViewer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

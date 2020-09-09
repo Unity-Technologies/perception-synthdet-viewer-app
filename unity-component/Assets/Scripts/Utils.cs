@@ -35,7 +35,6 @@ public class Utils : MonoBehaviour
 
         image.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         image.Apply();
-
         RenderTexture.active = currentRt;
         camera.targetTexture = currentCameraTexture;
         Destroy(rt);

@@ -31,13 +31,13 @@
       "size" : "40x40"
     },
     {
-      "filename" : "Icon-iPhone-120.png",
+      "filename" : "Unity-Tab-Circle-White-120.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "Icon-iPhone-180.png",
+      "filename" : "Unity-Tab-Circle-White-180.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
@@ -73,24 +73,25 @@
       "size" : "40x40"
     },
     {
-      "filename" : "Icon-iPad-76.png",
+      "filename" : "Unity-Tab-Circle-White-76.png",
       "idiom" : "ipad",
       "scale" : "1x",
       "size" : "76x76"
     },
     {
-      "filename" : "Icon-iPad-152.png",
+      "filename" : "Unity-Tab-Circle-White-152.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
-      "filename" : "Icon-iPad-167.png",
+      "filename" : "Unity-Tab-Circle-Whit-167.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "83.5x83.5"
     },
     {
+      "filename" : "Unity-Tab-Circle-White.png",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"

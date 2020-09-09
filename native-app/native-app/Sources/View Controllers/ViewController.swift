@@ -215,6 +215,9 @@ class ViewController: UIViewController {
     
     @objc private func onShutterButtonTapped(_ sender: UIButton) {
         UnityEmbeddedSwift.instance?.sendUnityMessageToGameObject("AR Session Main", method: "CaptureWithFormat", message: "Both")
+        AudioServicesPlaySystemSoundWithCompletion(1108, {
+            AudioServicesDisposeSystemSoundID(1108);
+        });
     }
     
 }

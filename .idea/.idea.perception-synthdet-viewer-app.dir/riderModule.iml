@@ -2,8 +2,6 @@
 <module type="RIDER_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$/../.." />
-    <content url="file://$USER_HOME$/Library/Unity/cache/packages/packages.unity.com/com.unity.xr.legacyinputhelpers@2.1.1" />
-    <content url="file://$USER_HOME$/Library/Unity/cache/packages/packages.unity.com/com.unity.xr.management@3.0.6" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

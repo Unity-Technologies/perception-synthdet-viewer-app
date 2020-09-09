@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:native-app/native-app.xcodeproj">
+      location = "group:/Users/nupur.yadav/Desktop/AR/SynthDetViewer/perception-synthdet-viewer-app/native-app/SynthDetViewer.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:unity-component/xcode-build/Unity-iPhone.xcodeproj">

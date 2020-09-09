@@ -19,7 +19,7 @@
                BlueprintIdentifier = "320A07B4248FF93900B93CB5"
                BuildableName = "unit-tests-2.xctest"
                BlueprintName = "unit-tests-2"
-               ReferencedContainer = "container:native-app.xcodeproj">
+               ReferencedContainer = "container:SynthDetViewer.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

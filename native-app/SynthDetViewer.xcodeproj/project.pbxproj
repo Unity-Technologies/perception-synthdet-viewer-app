@@ -198,9 +198,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		32883A2424881133005D0FE1 /* native-app */ = {
+		32883A2424881133005D0FE1 /* SynthDetViewer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 32883A3924881134005D0FE1 /* Build configuration list for PBXNativeTarget "native-app" */;
+			buildConfigurationList = 32883A3924881134005D0FE1 /* Build configuration list for PBXNativeTarget "SynthDetViewer" */;
 			buildPhases = (
 				32883A2124881133005D0FE1 /* Sources */,
 				32883A2224881133005D0FE1 /* Frameworks */,
@@ -211,7 +211,7 @@
 			);
 			dependencies = (
 			);
-			name = "native-app";
+			name = SynthDetViewer;
 			packageProductDependencies = (
 				32EC7BCE248ADCB900AA2BE5 /* Logging */,
 			);
@@ -235,7 +235,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 32883A2024881133005D0FE1 /* Build configuration list for PBXProject "native-app" */;
+			buildConfigurationList = 32883A2024881133005D0FE1 /* Build configuration list for PBXProject "SynthDetViewer" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -251,7 +251,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				32883A2424881133005D0FE1 /* native-app */,
+				32883A2424881133005D0FE1 /* SynthDetViewer */,
 			);
 		};
 /* End PBXProject section */
@@ -428,15 +428,17 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = 39LL6Q9676;
+				DEVELOPMENT_TEAM = BVPN9UFA9B;
 				INFOPLIST_FILE = "native-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-viewer-app.native-app";
 				PRODUCT_NAME = "Unity SynthDet Viewer";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";
@@ -453,15 +455,17 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = 39LL6Q9676;
+				DEVELOPMENT_TEAM = BVPN9UFA9B;
 				INFOPLIST_FILE = "native-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-demo-app.native-app";
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "mpavtest.com.unity3d.synthdet-viewer-app.native-app";
 				PRODUCT_NAME = "Unity SynthDet Viewer";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "native-app/Sources/Unity/native-app-Bridging-Header.h";
@@ -473,7 +477,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		32883A2024881133005D0FE1 /* Build configuration list for PBXProject "native-app" */ = {
+		32883A2024881133005D0FE1 /* Build configuration list for PBXProject "SynthDetViewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				32883A3724881134005D0FE1 /* Debug */,
@@ -482,7 +486,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		32883A3924881134005D0FE1 /* Build configuration list for PBXNativeTarget "native-app" */ = {
+		32883A3924881134005D0FE1 /* Build configuration list for PBXNativeTarget "SynthDetViewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				32883A3A24881134005D0FE1 /* Debug */,
